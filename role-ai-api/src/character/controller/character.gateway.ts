@@ -1,5 +1,7 @@
+import { Logger } from '@nestjs/common';
 import { CharacterService } from './../service/character.service';
 import {
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -8,14 +10,23 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class CharacterGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  /*
+    The difference between client.emit() and server.emit() is actually interesting. Research what are other use cases for each.
+  */
   @WebSocketServer()
   server: Server;
+
+  private readonly logger: Logger = new Logger(CharacterGateway.name);
 
   constructor(private readonly characterService: CharacterService) {}
 
@@ -31,8 +42,21 @@ export class CharacterGateway
     console.log('Websocket server initialized');
   }
 
-  @SubscribeMessage('message')
-  handleEvent(@MessageBody() data: string): void {
-    this.characterService.handlePrompt(JSON.parse(data)['prompt'], this.server);
+  @SubscribeMessage('prompt')
+  handleEvent(
+    @MessageBody() data: string,
+    @ConnectedSocket() client: Socket,
+  ): any {
+    if (!data) {
+      this.logger.log('No data provided for websocket connection');
+      return { message: 'Payload not provided' };
+    }
+    const jsonData: object = JSON.parse(data);
+    const prompt = jsonData['prompt'];
+    if (!prompt) {
+      this.logger.log('No prompt provided');
+      return { message: 'Prompt parameter not provided' };
+    }
+    this.characterService.handlePrompt(prompt, client);
   }
 }
