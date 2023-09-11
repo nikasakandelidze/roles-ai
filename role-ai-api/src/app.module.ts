@@ -4,6 +4,7 @@ import { CharacterModule } from './character/character.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmConfigService } from './config/typeorm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { OpenAIModule } from './openai/openai.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
+    OpenAIModule,
   ],
   controllers: [],
   providers: [],

@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class OauthLoginDto {
+export class LoginDto {
   @IsString()
   @IsNotEmpty()
-  token: string;
+  password: string;
 }

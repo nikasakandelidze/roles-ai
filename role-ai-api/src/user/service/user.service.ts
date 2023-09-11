@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { OauthLoginDto } from '../controller/dto/oauth-login.dto';
+import { LoginDto } from '../controller/dto/login.dto';
 import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UserService {
-  async oauthLogin(oauthDto: OauthLoginDto): Promise<void> {
+  async login(loginDto: LoginDto): Promise<void> {
     console.log('OauthLogin');
   }
 }
