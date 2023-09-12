@@ -1,4 +1,4 @@
-import { CryptoService } from './../../utils/jwt.service';
+import { CryptoService } from '../../utils/crypto.service';
 import {
   BadRequestException,
   Injectable,

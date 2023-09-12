@@ -1,4 +1,3 @@
-import { UserModule } from './../user/user.module';
 import { Module } from '@nestjs/common';
 import { CharacterGateway } from './controller/character.gateway';
 import { CharacterController } from './controller/character.controller';

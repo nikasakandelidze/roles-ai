@@ -7,7 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { OpenAIModule } from './openai/openai.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JWT_SECRET } from './utils/constants';
-import { CryptoService } from './utils/jwt.service';
+import { CryptoService } from './utils/crypto.service';
 
 @Module({
   imports: [
