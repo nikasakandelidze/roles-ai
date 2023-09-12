@@ -1,9 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 
 @Controller()
 export class CharacterController {
-  @Get('api/data')
-  async test(): Promise<any> {
+  @Post('api/character')
+  async createNewCharacter(): Promise<any> {
     return { invoked: true };
   }
 }

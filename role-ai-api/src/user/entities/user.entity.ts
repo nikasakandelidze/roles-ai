@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Character } from '../../character/entities/character.entity';
 
 @Entity()
 export class User {
@@ -52,4 +54,7 @@ export class User {
 
   @Column({ name: 'profile_image', nullable: true })
   profileImageLink: string;
+
+  @OneToMany(() => Character, (character) => character.user)
+  characters: Character[];
 }
