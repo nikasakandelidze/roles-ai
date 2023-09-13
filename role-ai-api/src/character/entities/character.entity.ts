@@ -1,9 +1,9 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "../../user/entities/user.entity";
 
 @Entity()
 export class Character {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({
@@ -16,7 +16,7 @@ export class Character {
   })
   context: string;
 
-  @Column({ name: 'character_image', nullable: true })
+  @Column({ name: "character_image", nullable: true })
   characterImage: string;
 
   @ManyToOne(() => User, (user) => user.characters)

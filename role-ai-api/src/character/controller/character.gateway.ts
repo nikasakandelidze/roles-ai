@@ -1,5 +1,5 @@
-import { Logger } from '@nestjs/common';
-import { CharacterService } from './../service/character.service';
+import { Logger } from "@nestjs/common";
+import { CharacterService } from "./../service/character.service";
 import {
   ConnectedSocket,
   MessageBody,
@@ -9,12 +9,12 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-} from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+} from "@nestjs/websockets";
+import { Server, Socket } from "socket.io";
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: "*",
   },
 })
 export class CharacterGateway
@@ -31,31 +31,31 @@ export class CharacterGateway
   constructor(private readonly characterService: CharacterService) {}
 
   handleDisconnect(client: any) {
-    console.log('Websocket disconnected');
+    console.log("Websocket disconnected");
   }
 
   handleConnection(client: any, ...args: any[]) {
-    console.log('Websocket connection initialized');
+    console.log("Websocket connection initialized");
   }
 
   afterInit(server: any) {
-    console.log('Websocket server initialized');
+    console.log("Websocket server initialized");
   }
 
-  @SubscribeMessage('prompt')
+  @SubscribeMessage("prompt")
   handleEvent(
     @MessageBody() data: string,
     @ConnectedSocket() client: Socket,
   ): any {
     if (!data) {
-      this.logger.log('No data provided for websocket connection');
-      return { message: 'Payload not provided' };
+      this.logger.log("No data provided for websocket connection");
+      return { message: "Payload not provided" };
     }
     const jsonData: object = JSON.parse(data);
-    const prompt = jsonData['prompt'];
+    const prompt = jsonData["prompt"];
     if (!prompt) {
-      this.logger.log('No prompt provided');
-      return { message: 'Prompt parameter not provided' };
+      this.logger.log("No prompt provided");
+      return { message: "Prompt parameter not provided" };
     }
     this.characterService.handlePrompt(prompt, client);
   }

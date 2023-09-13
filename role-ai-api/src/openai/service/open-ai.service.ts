@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import OpenAI from 'openai';
-import { ChatCompletionChunk } from 'openai/resources/chat';
-import { Stream } from 'openai/streaming';
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import OpenAI from "openai";
+import { ChatCompletionChunk } from "openai/resources/chat";
+import { Stream } from "openai/streaming";
 
 @Injectable()
 export class OpenAiService {
@@ -10,7 +10,7 @@ export class OpenAiService {
 
   constructor(private readonly configService: ConfigService) {
     this.openAiClient = new OpenAI({
-      apiKey: this.configService.get('OPENAI_KEY'),
+      apiKey: this.configService.get("OPENAI_KEY"),
     });
   }
 
@@ -18,9 +18,9 @@ export class OpenAiService {
     input: string,
   ): Promise<Stream<ChatCompletionChunk>> {
     return this.openAiClient.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: "gpt-3.5-turbo",
       stream: true,
-      messages: [{ role: 'user', content: input }],
+      messages: [{ role: "user", content: input }],
     });
   }
 }

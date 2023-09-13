@@ -4,11 +4,11 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { JWT_SECRET } from './constants';
-import { User } from '../user/entities/user.entity';
-import { Request } from 'express';
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { JWT_SECRET } from "./constants";
+import { User } from "../user/entities/user.entity";
+import { Request } from "express";
 
 export type JwtPayload = {
   sub: string; // id
@@ -43,7 +43,7 @@ export class AuthGuard implements CanActivate {
       });
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
-      request['user'] = payload;
+      request["user"] = payload;
     } catch {
       throw new UnauthorizedException();
     }
@@ -51,7 +51,7 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    const [type, token] = request.headers.authorization?.split(" ") ?? [];
+    return type === "Bearer" ? token : undefined;
   }
 }

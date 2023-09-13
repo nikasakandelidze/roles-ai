@@ -1,14 +1,14 @@
-import { CryptoService } from '../../utils/crypto.service';
+import { CryptoService } from "../../utils/crypto.service";
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
-import { LoginDto } from '../controller/dto/login.dto';
-import { RegisterDto } from '../controller/dto/register.dto';
-import { User } from '../entities/user.entity';
-import { DataSource, EntityManager } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+} from "@nestjs/common";
+import { LoginDto } from "../controller/dto/login.dto";
+import { RegisterDto } from "../controller/dto/register.dto";
+import { User } from "../entities/user.entity";
+import { DataSource, EntityManager } from "typeorm";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UserService {
@@ -23,14 +23,14 @@ export class UserService {
         where: { email: loginDto.email },
       });
       if (!user) {
-        throw new NotFoundException('User with specified username not found');
+        throw new NotFoundException("User with specified username not found");
       }
       const passwordCorrect = await bcrypt.compare(
         loginDto.password,
         user.password,
       );
       if (!passwordCorrect) {
-        throw new BadRequestException('Password incorrect');
+        throw new BadRequestException("Password incorrect");
       }
       const jwtToken: string = await this.cryptoService.generateJwt(user);
       await entityManager.update(
@@ -38,7 +38,8 @@ export class UserService {
         { id: user.id },
         { accessToken: jwtToken },
       );
-      return { accessToken: jwtToken };
+      const { password, ...restUser } = user;
+      return { accessToken: jwtToken, ...restUser };
     });
   }
 
@@ -49,7 +50,7 @@ export class UserService {
       });
       if (user) {
         throw new BadRequestException(
-          'User with specified Email already present',
+          "User with specified Email already present",
         );
       }
       if (registerDto.confirmPassword !== registerDto.password) {
