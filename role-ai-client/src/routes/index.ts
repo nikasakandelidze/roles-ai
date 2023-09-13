@@ -1,3 +1,4 @@
+import { Auth } from "../pages/Auth";
 import { Home } from "../pages/Home";
 import { Landing } from "../pages/Landing";
 
@@ -8,7 +9,6 @@ export type RouteData = {
   element: any;
   visibleOnNavbar: boolean;
   navbarTitle?: string;
-  noAuthNeeded?: boolean;
 };
 
 export const routes: Array<RouteData> = [
@@ -18,7 +18,6 @@ export const routes: Array<RouteData> = [
     element: Landing,
     title: "Landing",
     visibleOnNavbar: false,
-    noAuthNeeded: true,
   },
   {
     id: "home",
@@ -27,6 +26,13 @@ export const routes: Array<RouteData> = [
     title: "Home",
     visibleOnNavbar: true,
     navbarTitle: "Home",
-    noAuthNeeded: false,
+  },
+  {
+    id: "auth",
+    path: "/auth",
+    element: Auth,
+    title: "Login",
+    visibleOnNavbar: true,
+    navbarTitle: "Login",
   },
 ];
