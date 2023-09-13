@@ -28,14 +28,17 @@ export const useUserStore = create<UserState>((set) => ({
       const user: User = response.data;
       set({
         user,
-        loginProgress: { state: ProgressState.SUCCESS, message: null },
+        loginProgress: {
+          state: ProgressState.SUCCESS,
+          message: "Successfully logged in",
+        },
       });
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       set({
         loginProgress: {
           state: ProgressState.FAILED,
-          message: "Failed to Login",
+          message: err.response.data.message,
         },
       });
     }
@@ -51,7 +54,7 @@ export const useUserStore = create<UserState>((set) => ({
   ) => {
     try {
       set({
-        loginProgress: { state: ProgressState.IN_PROGRESS, message: null },
+        registerProgress: { state: ProgressState.IN_PROGRESS, message: null },
       });
       await axios.post("http://localhost:3001/api/register", {
         email,
@@ -59,14 +62,17 @@ export const useUserStore = create<UserState>((set) => ({
         confirmPassword,
       });
       set({
-        loginProgress: { state: ProgressState.SUCCESS, message: null },
+        registerProgress: {
+          state: ProgressState.SUCCESS,
+          message: "Successfully registered",
+        },
       });
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
       set({
-        loginProgress: {
+        registerProgress: {
           state: ProgressState.FAILED,
-          message: "Failed to register",
+          message: err.response.data.message,
         },
       });
     }
