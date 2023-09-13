@@ -12,6 +12,7 @@ import { GoogleIcon } from "../../common/icons";
 import { useUserStore } from "../../state/user";
 import { ProgressState } from "../../common/model";
 import { enqueueSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
 
 export type AuthState = "register" | "login";
 
@@ -21,6 +22,8 @@ const LoginCard = ({ toggleAuthState }: { toggleAuthState: () => void }) => {
   const [tryToLogin, setTryToLogin] = useState(false);
 
   const { login, loginProgress, resetLoginProgress } = useUserStore();
+
+  const navigate = useNavigate();
 
   // Why are we using side effect based actions vs direct actions in react?
   useEffect(() => {
@@ -52,6 +55,7 @@ const LoginCard = ({ toggleAuthState }: { toggleAuthState: () => void }) => {
       if (loginProgress.message)
         enqueueSnackbar(loginProgress.message, { variant: "success" });
       resetLoginProgress();
+      navigate("/home");
     }
   }, [loginProgress]);
 
@@ -266,6 +270,7 @@ const RegisterCard = ({ toggleAuthState }: { toggleAuthState: () => void }) => {
         First we need to know a bit about you
       </Typography>
       <TextField
+        type="email"
         name="Email"
         label="Email"
         sx={{
@@ -377,9 +382,19 @@ const RegisterCard = ({ toggleAuthState }: { toggleAuthState: () => void }) => {
 export const AuthCard = () => {
   const [authState, setAuthState] = useState<AuthState>("login");
 
+  const { user } = useUserStore();
+
   const toggleAuthState = () => {
     setAuthState((prev) => (prev === "login" ? "register" : "login"));
   };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/home");
+    }
+  }, [user]);
 
   return (
     <Box
