@@ -1,15 +1,6 @@
-import { useEffect } from "react";
-import { useUserStore } from "../../state/user";
-import { useNavigate } from "react-router-dom";
+import { observer } from "mobx-react-lite";
+import { userStore } from "../../state/user";
 
-export const Home = () => {
-  const { user } = useUserStore();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user) {
-      navigate("/auth");
-    }
-  }, [user]);
-  return <div>{user ? <>Hi</> : <>No</>}</div>;
-};
+export const Home = observer(() => {
+  return <div>{userStore.user ? <>Hi</> : <>No</>}</div>;
+});

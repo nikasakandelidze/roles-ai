@@ -33,7 +33,6 @@ export const useWebSocketHandler = ({
   const [promptHandlerActive, setPromptHandlerActive] = useState(false);
 
   const sendPrompt = (content: string) => {
-    console.log(content);
     socket.emit("prompt", JSON.stringify({ prompt: content }));
   };
 

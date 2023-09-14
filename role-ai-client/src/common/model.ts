@@ -2,12 +2,7 @@ export type User = {
   id: string;
   email: string;
   accessToken: string;
-  imageLink: string;
+  imageLink?: string;
 };
 
-export enum ProgressState {
-  IDLE = "IDLE",
-  IN_PROGRESS = "IN_PROGRESS",
-  SUCCESS = "SUCCESS",
-  FAILED = "FAILED",
-}
+export type ProgressState = "IDLE" | "IN_PROGRESS" | "SUCCESS" | "FAILED";

@@ -1,89 +1,102 @@
-import { create } from "zustand";
 import { ProgressState, User } from "../../common/model";
 import axios from "axios";
+import { action, makeObservable, observable, runInAction } from "mobx";
 
-export interface UserState {
-  user: User | null;
-  loginProgress: { state: ProgressState; message: string | null };
-  login: (email: string, password: string) => void;
-  registerProgress: { state: ProgressState; message: string | null };
-  register: (email: string, password: string, confirmPassword: string) => void;
-  logout: () => void;
-  resetLoginProgress: () => void;
-  resetRegisterProgress: () => void;
-}
+export type ActionProgress = {
+  state: ProgressState;
+  message: string | null;
+};
 
-export const useUserStore = create<UserState>((set) => ({
-  user: null,
-  loginProgress: { state: ProgressState.IDLE, message: null },
-  login: async (email: string, password: string) => {
+export class UserState {
+  user: User | null = null;
+  loginProgress: ActionProgress = { state: "IDLE", message: null };
+  registerProgress: ActionProgress = { state: "IDLE", message: null };
+
+  constructor() {
+    makeObservable(this, {
+      user: observable,
+      loginProgress: observable,
+      registerProgress: observable,
+      login: action,
+      register: action,
+      updateUser: action,
+      updateLoginProgressState: action,
+      updateRegisterProgressState: action,
+      finalizeLogin: action,
+    });
+  }
+
+  finalizeLogin = (user: User) => {
+    this.user = {
+      id: user.id,
+      email: user.email,
+      accessToken: user.accessToken,
+    };
+    this.loginProgress = {
+      state: "SUCCESS",
+      message: "Successfully logged in",
+    };
+  };
+
+  login = async (email: string, password: string) => {
     try {
-      set({
-        loginProgress: { state: ProgressState.IN_PROGRESS, message: null },
+      runInAction(() => {
+        this.updateLoginProgressState("IN_PROGRESS", null);
       });
       const response = await axios.post("http://localhost:3001/api/login", {
         email,
         password,
       });
       const user: User = response.data;
-      set({
-        user,
-        loginProgress: {
-          state: ProgressState.SUCCESS,
-          message: "Successfully logged in",
-        },
+      runInAction(() => {
+        this.finalizeLogin(user);
       });
     } catch (err: any) {
       console.log(err);
-      set({
-        loginProgress: {
-          state: ProgressState.FAILED,
-          message: err.response.data.message,
-        },
+      runInAction(() => {
+        this.updateLoginProgressState(
+          "FAILED",
+          err.response?.data?.message || "Failed to login",
+        );
       });
     }
-  },
-  registerProgress: {
-    state: ProgressState.IDLE,
-    message: null,
-  },
-  register: async (
+  };
+  register = async (
     email: string,
     password: string,
     confirmPassword: string,
   ) => {
     try {
-      set({
-        registerProgress: { state: ProgressState.IN_PROGRESS, message: null },
-      });
+      this.updateRegisterProgressState("IN_PROGRESS", null);
       await axios.post("http://localhost:3001/api/register", {
         email,
         password,
         confirmPassword,
       });
-      set({
-        registerProgress: {
-          state: ProgressState.SUCCESS,
-          message: "Successfully registered",
-        },
-      });
+      this.updateRegisterProgressState("SUCCESS", "You logged in successfully");
     } catch (err: any) {
       console.log(err);
-      set({
-        registerProgress: {
-          state: ProgressState.FAILED,
-          message: err.response.data.message,
-        },
-      });
+      this.updateRegisterProgressState(
+        "FAILED",
+        err.response?.data?.message || "Failed to register",
+      );
     }
-  },
-  logout: () => {
-    set({ user: null });
-  },
-  resetLoginProgress: () => {
-    set({ loginProgress: { state: ProgressState.IDLE, message: null } });
-  },
-  resetRegisterProgress: () => {
-    set({ registerProgress: { state: ProgressState.IDLE, message: null } });
-  },
-}));
+  };
+
+  updateUser = (user: User) => {
+    this.user = { ...user };
+  };
+
+  updateLoginProgressState = (state: ProgressState, message: string | null) => {
+    this.loginProgress = { state, message };
+  };
+
+  updateRegisterProgressState = (
+    state: ProgressState,
+    message: string | null,
+  ) => {
+    this.registerProgress = { state, message };
+  };
+}
+
+export const userStore: UserState = new UserState();

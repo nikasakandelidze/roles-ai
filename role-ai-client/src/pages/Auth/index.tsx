@@ -1,7 +1,8 @@
 import { Grid } from "@mui/material";
 import { AuthCard } from "./AuthCard";
+import { observer } from "mobx-react-lite";
 
-export const Auth = () => {
+export const Auth = observer(() => {
   return (
     <Grid
       container
@@ -11,9 +12,16 @@ export const Auth = () => {
         height: "100%",
       }}
     >
-      <Grid alignItems={"center"} item xs={8} sx={{ height: "100%" }}>
+      <Grid
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        item
+        xs={8}
+        sx={{ height: "100%" }}
+      >
         <AuthCard />
       </Grid>
     </Grid>
   );
-};
+});
