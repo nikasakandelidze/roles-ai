@@ -12,19 +12,29 @@ const App = () => {
     <SnackbarProvider autoHideDuration={1500}>
       <ThemeProvider theme={theme}>
         <div
-          style={{ height: "100vh", width: "100%", backgroundColor: "#FFFFFF" }}
+          style={{
+            height: "100vh",
+            width: "100%",
+            backgroundColor: "#FFFFFF",
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
-          {pathname.toLowerCase() !== "/auth" &&
-            pathname.toLowerCase() !== "/" && <Navigation />}
-          <Routes>
-            {routes.map((route: RouteData) => (
-              <Route
-                key={route.id}
-                path={route.path}
-                element={<route.element />}
-              />
-            ))}
-          </Routes>
+          <div style={{ display: "flex" }}>
+            {pathname.toLowerCase() !== "/auth" &&
+              pathname.toLowerCase() !== "/" && <Navigation />}
+          </div>
+          <div style={{ display: "flex", flex: 1, width: "100%" }}>
+            <Routes>
+              {routes.map((route: RouteData) => (
+                <Route
+                  key={route.id}
+                  path={route.path}
+                  element={<route.element />}
+                />
+              ))}
+            </Routes>
+          </div>
         </div>
       </ThemeProvider>
     </SnackbarProvider>
