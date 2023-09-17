@@ -267,20 +267,15 @@ export const Home = observer(() => {
   };
 
   useEffect(() => {
-    if (
-      userStore.initialUserCheckStatus === "FAILED" ||
-      (userStore.initialUserCheckStatus === "SUCCESS" && !userStore.user)
-    ) {
+    if (userStore.initialUserCheckStatus === "FINISHED" && !userStore.user) {
       navigate("/auth");
     }
   }, [userStore.initialUserCheckStatus, userStore.user]);
 
-  console.log(userStore.initialUserCheckStatus);
   return (
     <Grid style={{ width: "100%" }}>
       <Grid item xs={12}>
-        {userStore.initialUserCheckStatus === "IN_PROGRESS" ||
-        userStore.initialUserCheckStatus === "IDLE" ? (
+        {userStore.initialUserCheckStatus !== "FINISHED" ? (
           <CircularProgress size="80px" />
         ) : userStore.user ? (
           currentPage === "home" ? (

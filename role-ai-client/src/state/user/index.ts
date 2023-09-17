@@ -1,4 +1,8 @@
-import { ProgressState, User } from "../../common/model";
+import {
+  InitialUserCheckProgressState,
+  ProgressState,
+  User,
+} from "../../common/model";
 import axios, { AxiosError } from "axios";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { USER_LOCAL_STORAGE_KEY } from "../../common/constants";
@@ -12,7 +16,7 @@ export class UserState {
   user: User | null = null;
   loginProgress: ActionProgress = { state: "IDLE", message: null };
   registerProgress: ActionProgress = { state: "IDLE", message: null };
-  initialUserCheckStatus: ProgressState = "IDLE";
+  initialUserCheckStatus: InitialUserCheckProgressState = "IDLE";
 
   constructor() {
     makeObservable(this, {
@@ -32,7 +36,7 @@ export class UserState {
     });
   }
 
-  updateCheckWasFinished = (status: ProgressState) => {
+  updateCheckWasFinished = (status: InitialUserCheckProgressState) => {
     this.initialUserCheckStatus = status;
   };
 
@@ -74,17 +78,17 @@ export class UserState {
             };
           });
         }
-        this.updateCheckWasFinished("SUCCESS");
+        this.updateCheckWasFinished("FINISHED");
       } catch (err: any) {
         console.log(err);
         const aerr: AxiosError = err as AxiosError;
         if (aerr.response?.status === 401) {
           this.resetUser();
         }
-        this.updateCheckWasFinished("FAILED");
+        this.updateCheckWasFinished("FINISHED");
       }
     } else {
-      this.updateCheckWasFinished("SUCCESS");
+      this.updateCheckWasFinished("FINISHED");
     }
   };
 

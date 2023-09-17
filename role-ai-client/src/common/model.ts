@@ -15,3 +15,5 @@ export type Character = {
 export type CreateCharacter = Pick<Character, "name" | "context">;
 
 export type ProgressState = "IDLE" | "IN_PROGRESS" | "SUCCESS" | "FAILED";
+
+export type InitialUserCheckProgressState = "IDLE" | "IN_PROGRESS" | "FINISHED";
