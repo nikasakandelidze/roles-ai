@@ -52,18 +52,23 @@ export class CharacterService {
     });
   }
 
-  async filterCharacters(filter: FilterCharacterDto): Promise<Character[]> {
-    return this.dataSource.transaction(async (entityManager: EntityManager) => {
-      const user: User = await entityManager.findOneBy(User, {
-        id: filter.userId,
-      });
-      if (!user) {
-        throw new BadRequestException("User with specified id not found");
-      }
-      return entityManager.find(Character, {
-        where: { user: { id: user.id } },
-        relations: ["user"],
-      });
-    });
+  async filterCharacters(
+    filter: FilterCharacterDto,
+  ): Promise<{ characters: Character[] }> {
+    const result: Character[] = await this.dataSource.transaction(
+      async (entityManager: EntityManager) => {
+        const user: User = await entityManager.findOneBy(User, {
+          id: filter.userId,
+        });
+        if (!user) {
+          throw new BadRequestException("User with specified id not found");
+        }
+        return entityManager.find(Character, {
+          where: { user: { id: user.id } },
+          relations: ["user"],
+        });
+      },
+    );
+    return { characters: result };
   }
 }
