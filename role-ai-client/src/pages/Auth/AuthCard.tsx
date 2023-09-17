@@ -52,7 +52,7 @@ const LoginCard = observer(
             variant: "error",
           });
         }
-        // userStore.updateLoginProgressState("IDLE", null);
+        userStore.updateLoginProgressState("IDLE", null);
       } else if (userStore.loginProgress.state === "SUCCESS") {
         if (userStore.loginProgress.message) {
           enqueueSnackbar(userStore.loginProgress.message, {
@@ -60,7 +60,7 @@ const LoginCard = observer(
           });
         }
         navigate("/home");
-        // userStore.updateLoginProgressState("IDLE", null);
+        userStore.updateLoginProgressState("IDLE", null);
       }
     }, [userStore.loginProgress.state]);
 
