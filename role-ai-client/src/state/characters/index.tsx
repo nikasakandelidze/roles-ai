@@ -1,7 +1,7 @@
 import { action, makeObservable, observable } from "mobx";
 import { Character, CreateCharacter, ProgressState } from "../../common/model";
 import { ActionProgress, UserState, userStore } from "../user";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export class CharactersState {
   characters: Character[] = [];
@@ -20,8 +20,13 @@ export class CharactersState {
       appendToCharactersList: action,
       updateCharacterCreationProgressState: action,
       updateCharactersFilterProgressState: action,
+      updateCharacters: action,
     });
   }
+
+  updateCharacters = (characters: Character[]) => {
+    this.characters = characters;
+  };
 
   appendToCharactersList = (character: Character) => {
     this.characters = [...this.characters, character];
@@ -68,6 +73,10 @@ export class CharactersState {
       );
       this.appendToCharactersList(character);
     } catch (err: any) {
+      const aerr: AxiosError = err as AxiosError;
+      if (aerr.response?.status === 401) {
+        this.userStore.resetUser();
+      }
       console.log(err);
       this.updateCharacterCreationProgressState(
         "FAILED",
@@ -85,12 +94,16 @@ export class CharactersState {
         },
       });
       const data: { characters: Character[] } = response.data;
-      this.characters = data.characters;
+      this.updateCharacters(data.characters);
       this.updateCharactersFilterProgressState(
         "SUCCESS",
         "Character created successfully",
       );
     } catch (err: any) {
+      const aerr: AxiosError = err as AxiosError;
+      if (aerr.response?.status === 401) {
+        this.userStore.resetUser();
+      }
       console.log(err);
       this.updateCharactersFilterProgressState(
         "FAILED",

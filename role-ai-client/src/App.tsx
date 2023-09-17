@@ -4,9 +4,16 @@ import { ThemeProvider } from "@mui/material";
 import { theme } from "./common/styles";
 import { SnackbarProvider } from "notistack";
 import { Navigation } from "./components/navbar";
+import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
+import { userStore } from "./state/user";
 
-const App = () => {
+const App = observer(() => {
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    userStore.checkToken();
+  }, []);
 
   return (
     <SnackbarProvider autoHideDuration={1500}>
@@ -39,6 +46,6 @@ const App = () => {
       </ThemeProvider>
     </SnackbarProvider>
   );
-};
+});
 
 export default App;

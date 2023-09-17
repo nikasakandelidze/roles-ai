@@ -20,6 +20,7 @@ import { userStore } from "../../state/user";
 import { charactersStore } from "../../state/characters";
 import { Character } from "../../common/model";
 import { CharacterCard } from "../../components/character/CharacterCard";
+import { useNavigate } from "react-router-dom";
 
 export type HomePageType = "home" | "create_character";
 
@@ -59,14 +60,20 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
       >
         {charactersStore.characters && charactersStore.characters.length ? (
           [
-            <Grid item xs={12} display="flex" justifyContent="center">
+            <Grid
+              key={"FIRST_ONE_TEXT_KEY"}
+              item
+              xs={12}
+              display="flex"
+              justifyContent="center"
+            >
               <Typography variant="h4">
                 AI Characters to choose from:
               </Typography>
             </Grid>,
             ...charactersStore.characters.map((character: Character) => {
               return (
-                <Grid item xs={3}>
+                <Grid item xs={3} key={character.id}>
                   <CharacterCard character={character} />
                 </Grid>
               );
@@ -253,15 +260,29 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
 
 export const Home = observer(() => {
   const [currentPage, setCurrentPage] = useState<HomePageType>("home");
+  const navigate = useNavigate();
 
   const togglePage = () => {
     setCurrentPage((prev) => (prev === "home" ? "create_character" : "home"));
   };
 
+  useEffect(() => {
+    if (
+      userStore.initialUserCheckStatus === "FAILED" ||
+      (userStore.initialUserCheckStatus === "SUCCESS" && !userStore.user)
+    ) {
+      navigate("/auth");
+    }
+  }, [userStore.initialUserCheckStatus, userStore.user]);
+
+  console.log(userStore.initialUserCheckStatus);
   return (
     <Grid style={{ width: "100%" }}>
       <Grid item xs={12}>
-        {userStore.user ? (
+        {userStore.initialUserCheckStatus === "IN_PROGRESS" ||
+        userStore.initialUserCheckStatus === "IDLE" ? (
+          <CircularProgress size="80px" />
+        ) : userStore.user ? (
           currentPage === "home" ? (
             <HomePage togglePage={() => togglePage()} />
           ) : (
