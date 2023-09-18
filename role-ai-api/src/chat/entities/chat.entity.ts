@@ -25,6 +25,12 @@ export class Chat {
 
   @Column({
     nullable: false,
+    default: false,
+  })
+  isSystemMessage: boolean;
+
+  @Column({
+    nullable: false,
   })
   content: string;
 

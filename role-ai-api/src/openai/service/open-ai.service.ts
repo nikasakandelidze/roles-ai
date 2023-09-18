@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import OpenAI from "openai";
 import { ChatCompletionChunk } from "openai/resources/chat";
 import { Stream } from "openai/streaming";
+import { Chat } from "../../chat/entities/chat.entity";
 
 @Injectable()
 export class OpenAiService {
@@ -14,13 +15,22 @@ export class OpenAiService {
     });
   }
 
-  async completeWithStream(
-    input: string,
+  async generateStreamingOutput(
+    chatMessages: Chat[],
   ): Promise<Stream<ChatCompletionChunk>> {
     return this.openAiClient.chat.completions.create({
       model: "gpt-3.5-turbo",
       stream: true,
-      messages: [{ role: "user", content: input }],
+      messages: chatMessages.map((chat: Chat) => {
+        return {
+          role: chat.isSystemMessage
+            ? "system"
+            : chat.isBot
+            ? "assistant"
+            : "user",
+          content: chat.content,
+        };
+      }),
     });
   }
 }

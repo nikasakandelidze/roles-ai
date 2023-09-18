@@ -10,6 +10,7 @@ import { Stream } from "openai/streaming";
 import { ChatCompletionChunk } from "openai/resources/chat";
 import { Socket } from "socket.io";
 import { OpenAiService } from "../../openai/service/open-ai.service";
+import { ChatMessageDto } from "../dto/chat-message.dto";
 
 @Injectable()
 export class SessionService {
@@ -42,6 +43,7 @@ export class SessionService {
           sessionId: session.id,
           content: `${character.context} and ${character.audience}`,
           visible: false,
+          isSystemMessage: true,
         },
         entityManager,
       );
@@ -71,21 +73,66 @@ export class SessionService {
       session.chat.sort(
         (a: Chat, b: Chat) => a.createdAt.getTime() - b.createdAt.getTime(),
       );
-      return session;
+      const { password, ...rest } = session.user;
+      return { ...session, user: { ...rest } };
     });
   }
 
-  async handlePrompt(input: string, client: Socket): Promise<void> {
+  async handleChatMessage(
+    chatMessage: ChatMessageDto,
+    client: Socket,
+  ): Promise<void> {
+    this.dataSource.transaction(async (entityManager: EntityManager) => {
+      const user: User = await entityManager.findOneBy(User, {
+        id: chatMessage.userId,
+      });
+      if (user) {
+        const session: Session = await entityManager.findOne(Session, {
+          where: { id: chatMessage.sessionId },
+          relations: ["user"],
+        });
+        if (session && session.user.id === chatMessage.userId) {
+          await entityManager.save(
+            entityManager.create(Chat, {
+              ...chatMessage,
+              content: chatMessage.chat.content,
+              author: user,
+              session,
+            }),
+          );
+          const sessionChat: Chat[] = await entityManager.find(Chat, {
+            where: { session: { id: session.id } },
+            order: { createdAt: "ASC" },
+          });
+          await this.generateOutput(sessionChat, client, entityManager);
+        }
+      }
+    });
+  }
+
+  private async generateOutput(
+    chat: Chat[],
+    client: Socket,
+    entityManager?: EntityManager,
+  ) {
     const resultStream: Stream<ChatCompletionChunk> =
-      await this.openAiService.completeWithStream(input);
+      await this.openAiService.generateStreamingOutput(chat);
 
     let responseText = "";
 
     for await (const part of resultStream) {
-      console.log(part.choices[0]?.delta?.content);
       const text: string = part.choices[0]?.delta?.content || "";
-      client.emit("prompt", text);
+      client.emit("CHAT_OUTPUT", text);
       responseText += text;
+    }
+
+    if (entityManager) {
+      await entityManager.save(
+        entityManager.create(Chat, {
+          content: responseText,
+          isBot: true,
+        }),
+      );
     }
   }
 }

@@ -12,6 +12,7 @@ import {
 
 import { Server, Socket } from "socket.io";
 import { SessionService } from "../service/session.service";
+import { ChatMessageDto } from "../dto/chat-message.dto";
 
 @WebSocketGateway({
   cors: {
@@ -43,21 +44,18 @@ export class SessionGateway
     console.log("Websocket server initialized");
   }
 
-  @SubscribeMessage("chat")
+  @SubscribeMessage("CHAT_INPUT")
   handleEvent(
-    @MessageBody() data: string,
+    @MessageBody() data: ChatMessageDto,
     @ConnectedSocket() client: Socket,
   ): any {
     if (!data) {
       this.logger.log("No data provided for websocket connection");
       return { message: "Payload not provided" };
     }
-    const jsonData: object = JSON.parse(data);
-    const prompt = jsonData["prompt"];
-    if (!prompt) {
-      this.logger.log("No prompt provided");
-      return { message: "Prompt parameter not provided" };
-    }
-    // this.sessionService.handlePrompt(prompt, client);
+    console.log(data);
+    // const chatData: ChatMessageDto = JSON.parse(data) as ChatMessageDto;
+    console.log(data);
+    this.sessionService.handleChatMessage(data, client);
   }
 }
