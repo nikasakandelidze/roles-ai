@@ -7,21 +7,13 @@ import {
   Toolbar,
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import MenuIcon from "@mui/icons-material/Menu";
 import { Colors } from "../../common/styles";
 import { observer } from "mobx-react-lite";
 import { userStore } from "../../state/user";
-import { useState } from "react";
+import { useMenuAnchor } from "../../hooks/useMenuAnchor";
 
 export const Navigation = observer(() => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const { anchorEl, open, handleClick, handleClose } = useMenuAnchor();
 
   return (
     <>

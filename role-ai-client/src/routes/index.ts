@@ -1,6 +1,7 @@
 import { Auth } from "../pages/Auth";
 import { Home } from "../pages/Home";
 import { Landing } from "../pages/Landing";
+import { Session } from "../pages/Session";
 
 export type RouteData = {
   id: string;
@@ -34,5 +35,12 @@ export const routes: Array<RouteData> = [
     title: "Login",
     visibleOnNavbar: true,
     navbarTitle: "Login",
+  },
+  {
+    id: "session",
+    path: "/session",
+    element: Session,
+    title: "Session",
+    visibleOnNavbar: false,
   },
 ];

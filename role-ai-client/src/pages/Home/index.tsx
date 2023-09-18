@@ -7,11 +7,12 @@ import {
   CircularProgress,
   Divider,
   Grid,
+  Menu,
+  MenuItem,
   TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import AddIcon from "@mui/icons-material/Add";
 import { BorderRadius, Colors, Margin, Padding } from "../../common/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { enqueueSnackbar } from "notistack";
@@ -23,13 +24,47 @@ import { CharacterCard } from "../../components/character/CharacterCard";
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import { useMenuAnchor } from "../../hooks/useMenuAnchor";
+import { useStartSession } from "../../hooks/useStartSession";
+import { sessionStore } from "../../state/sessions";
+import { useNavigate } from "react-router-dom";
 
 export type HomePageType = "home" | "create_character";
 
+// What about introducing custom hooks instead of polluting UI code with logic and state management?
 const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
+  const { anchorEl, open, handleClick, handleClose } = useMenuAnchor();
+  const { setCharacterId } = useStartSession();
+  const navigate = useNavigate();
+
   useEffect(() => {
     charactersStore.filterCharacters();
   }, []);
+
+  // Why is sessionStore.session needed here? Why doesn't this effect work only with first argument?
+  useEffect(() => {
+    if (sessionStore.startSessionProgressState.state === "FAILED") {
+      if (sessionStore.startSessionProgressState.message) {
+        enqueueSnackbar(sessionStore.startSessionProgressState.message, {
+          variant: "error",
+        });
+      }
+      sessionStore.updateNewSessionProgressState("IDLE", null);
+    } else if (sessionStore.startSessionProgressState.state === "SUCCESS") {
+      if (sessionStore.startSessionProgressState.message) {
+        enqueueSnackbar(sessionStore.startSessionProgressState.message, {
+          variant: "success",
+        });
+      }
+      sessionStore.updateNewSessionProgressState("IDLE", null);
+      sessionStore.session &&
+        navigate(
+          `/session?${new URLSearchParams({
+            characterId: sessionStore.session?.character.id,
+          })}`,
+        );
+    }
+  }, [sessionStore.startSessionProgressState, sessionStore.session]);
 
   return (
     <Grid container columnSpacing={{ xs: 2, height: "100%" }}>
@@ -64,12 +99,36 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
             borderRadius: BorderRadius.B8,
             padding: Padding.P8,
             backgroundColor: Colors.Green.G300,
+            "&:hover": {
+              backgroundColor: Colors.Green.G500,
+            },
           }}
-          onClick={() => togglePage()}
+          onClick={(e) => handleClick(e)}
         >
           <PlayCircleIcon />
           Start new Session
         </Button>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}
+        >
+          {charactersStore.characters.map((character: Character) => (
+            <MenuItem
+              key={character.id}
+              onClick={() => {
+                setCharacterId(character.id);
+                handleClose();
+              }}
+            >
+              <Typography variant="body2">{character.id}</Typography>
+            </MenuItem>
+          ))}
+        </Menu>
       </Grid>
       <Divider sx={{ width: "100%", opacity: 0.3, marginBottom: Margin.M68 }} />
       <Grid

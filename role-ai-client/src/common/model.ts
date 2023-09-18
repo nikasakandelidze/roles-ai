@@ -11,6 +11,30 @@ export type Character = {
   context: string;
   characterImage: string;
   audience: string;
+  user?: User;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type Chat = {
+  id: string;
+  author?: User;
+  isBot: boolean;
+  content: string;
+  visible: boolean;
+  createdAt: string;
+  updatedAt: string;
+  session?: Session;
+};
+
+export type Session = {
+  id: string;
+  title: string;
+  character: Character;
+  user?: User;
+  chat: Chat[];
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type CreateCharacter = Pick<Character, "name" | "context" | "audience">;

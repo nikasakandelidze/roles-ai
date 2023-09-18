@@ -16,6 +16,7 @@ import { userStore } from "../../state/user";
 
 export type AuthState = "register" | "login";
 
+// What about introducing custom hooks instead of polluting UI code with logic and state management?
 const LoginCard = observer(
   ({ toggleAuthState }: { toggleAuthState: () => void }) => {
     const [email, setEmail] = useState<string>("");
