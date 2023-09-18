@@ -36,6 +36,7 @@ export class SessionService {
       const session: Session = await entityManager.save(
         entityManager.create(Session, { user, character }),
       );
+
       await this.chatService.addNewChat(
         {
           sessionId: session.id,
@@ -44,8 +45,12 @@ export class SessionService {
         },
         entityManager,
       );
-      const { password, ...rest } = session.user;
-      return { ...session, user: { ...rest } };
+      const resultSession: Session = await entityManager.findOne(Session, {
+        where: { id: session.id },
+        relations: ["user", "chat", "character"],
+      });
+      const { password, ...rest } = resultSession.user;
+      return { ...resultSession, user: { ...rest } };
     });
   }
 
