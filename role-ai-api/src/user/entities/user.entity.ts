@@ -20,7 +20,7 @@ export class User {
   lastName: string;
 
   @Column({ name: "password", nullable: true })
-  password: string;
+  password?: string;
 
   @Column({ name: "email", nullable: false })
   email: string;

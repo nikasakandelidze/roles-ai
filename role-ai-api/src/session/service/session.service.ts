@@ -44,7 +44,8 @@ export class SessionService {
         },
         entityManager,
       );
-      return session;
+      const { password, ...rest } = session.user;
+      return { ...session, user: { ...rest } };
     });
   }
 

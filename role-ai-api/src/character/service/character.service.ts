@@ -1,5 +1,4 @@
 import { FilterCharacterDto } from "./../dto/filter-character.dto";
-import { Stream } from "openai/streaming";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { OpenAiService } from "../../openai/service/open-ai.service";
 
