@@ -125,7 +125,7 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
                 handleClose();
               }}
             >
-              <Typography variant="body2">{character.id}</Typography>
+              <Typography variant="body2">{character.name}</Typography>
             </MenuItem>
           ))}
         </Menu>

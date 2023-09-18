@@ -8,7 +8,9 @@ import {
 import { ProgressState, Session } from "../../common/model";
 import { ActionProgress, UserState, userStore } from "../user";
 import axios, { AxiosError } from "axios";
+import { socketService } from "../../common/socket";
 
+export const MESSAGE_TOPIC = "chat";
 export class SessionState {
   session: Session | null = null;
   startSessionProgressState: ActionProgress = { state: "IDLE", message: null };
@@ -21,8 +23,13 @@ export class SessionState {
       session: observable,
       startNewSession: action,
       updateSession: action,
+      sendMessage: action,
     });
   }
+
+  sendMessage = async (message: string) => {
+    socketService.send(message, MESSAGE_TOPIC);
+  };
 
   updateNewSessionProgressState = (
     state: ProgressState,

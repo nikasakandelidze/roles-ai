@@ -1,48 +1,20 @@
-import { useEffect, useState } from "react";
-import { socket } from "../common/socket";
+import { useEffect } from "react";
+import { socketService } from "../common/socket";
+import { sessionStore } from "../state/sessions";
 
-export const useWebSocketConnection = () => {
-  const [isConnected, setIsConnected] = useState(socket.connected);
-
+export const useSetupWebsocketConnection = (
+  handler?: ((text: string) => void) | undefined,
+) => {
   useEffect(() => {
-    function onConnect() {
-      setIsConnected(true);
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-    }
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-
+    socketService.connect(handler);
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
+      socketService.disconnect();
     };
   }, []);
 
-  return { isConnected };
-};
-
-export const useWebSocketHandler = ({
-  promptResponseHandler,
-}: {
-  promptResponseHandler: (content: string) => void;
-}) => {
-  const [promptHandlerActive, setPromptHandlerActive] = useState(false);
-
-  const sendPrompt = (content: string) => {
-    socket.emit("prompt", JSON.stringify({ prompt: content }));
+  const send = (message: string) => {
+    sessionStore.sendMessage(message);
   };
 
-  useEffect(() => {
-    socket.on("prompt", promptResponseHandler);
-    setPromptHandlerActive(true);
-    return () => {
-      socket.off("prompt", () => setPromptHandlerActive(false));
-    };
-  }, []);
-
-  return { promptHandlerActive, setPromptHandlerActive, sendPrompt };
+  return { send };
 };
