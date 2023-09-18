@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { RouteData, routes } from "./routes";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "./common/styles";
@@ -10,10 +10,17 @@ import { userStore } from "./state/user";
 
 const App = observer(() => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     userStore.checkToken();
   }, []);
+
+  useEffect(() => {
+    if (userStore.initialUserCheckStatus === "FINISHED" && !userStore.user) {
+      navigate("/auth");
+    }
+  }, [userStore.initialUserCheckStatus, userStore.user]);
 
   return (
     <SnackbarProvider autoHideDuration={1500}>

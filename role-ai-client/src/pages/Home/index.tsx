@@ -20,7 +20,9 @@ import { userStore } from "../../state/user";
 import { charactersStore } from "../../state/characters";
 import { Character } from "../../common/model";
 import { CharacterCard } from "../../components/character/CharacterCard";
-import { useNavigate } from "react-router-dom";
+
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 
 export type HomePageType = "home" | "create_character";
 
@@ -41,11 +43,32 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
       >
         <Button
           variant="contained"
-          sx={{ borderRadius: BorderRadius.B8 }}
+          sx={{ borderRadius: BorderRadius.B8, padding: Padding.P8 }}
           onClick={() => togglePage()}
         >
-          <AddIcon />
+          <AddCircleIcon />
           Add Character
+        </Button>
+        <Divider
+          orientation="vertical"
+          sx={{
+            height: "35%",
+            marginLeft: Margin.M12,
+            marginRight: Margin.M12,
+            opacity: 0.5,
+          }}
+        />
+        <Button
+          variant="contained"
+          sx={{
+            borderRadius: BorderRadius.B8,
+            padding: Padding.P8,
+            backgroundColor: Colors.Green.G300,
+          }}
+          onClick={() => togglePage()}
+        >
+          <PlayCircleIcon />
+          Start new Session
         </Button>
       </Grid>
       <Divider sx={{ width: "100%", opacity: 0.3, marginBottom: Margin.M68 }} />
@@ -56,7 +79,7 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
         display="flex"
         justifyContent="center"
         alignItems="flex-start"
-        spacing={3}
+        spacing={4}
       >
         {charactersStore.characters && charactersStore.characters.length ? (
           [
@@ -73,7 +96,7 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
             </Grid>,
             ...charactersStore.characters.map((character: Character) => {
               return (
-                <Grid item xs={3} key={character.id}>
+                <Grid item xs={4} key={character.id}>
                   <CharacterCard character={character} />
                 </Grid>
               );
@@ -111,15 +134,23 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
   );
 });
 
+const INIT_DESCRIPTION = "Act as a ";
+const INIT_AUDIENCE_DESCRIPTION = "Your audience is ";
+
 const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
   const [name, setName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [description, setDescription] = useState<string>(INIT_DESCRIPTION);
+  const [audience, setAudience] = useState(INIT_AUDIENCE_DESCRIPTION);
   const [tryToCreate, setTryToCreate] = useState(false);
 
   useEffect(() => {
     if (tryToCreate) {
       if (name && description) {
-        charactersStore.createCharacter({ name, context: description });
+        charactersStore.createCharacter({
+          name,
+          context: description,
+          audience,
+        });
       } else {
         if (!name) {
           enqueueSnackbar("Character Name is mandatory", { variant: "info" });
@@ -148,16 +179,23 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
       charactersStore.updateCharacterCreationProgressState("IDLE", null);
       setDescription("");
       setName("");
+      setAudience("");
     }
   }, [charactersStore.characterCreationProgress]);
 
   return (
-    <Grid container justifyContent="center" alignItems="center">
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      sx={{ height: "100%" }}
+    >
       <Grid item xs={5}>
         <Card
           sx={{
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
             flexDirection: "column",
             padding: Padding.P8,
             borderRadius: BorderRadius.B8,
@@ -231,6 +269,21 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
               marginBottom: Margin.M24,
             }}
             onChange={(e) => setDescription(e.target.value)}
+            value={description}
+          />
+          <TextField
+            placeholder="Describe the audience of the chat"
+            variant="outlined"
+            minRows={"3"}
+            maxRows={"10"}
+            multiline
+            sx={{
+              backgroundColor: Colors.Light.N0,
+              width: "100%",
+              marginBottom: Margin.M24,
+            }}
+            onChange={(e) => setDescription(e.target.value)}
+            value={audience}
           />
           <Box
             display="flex"
@@ -260,20 +313,13 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
 
 export const Home = observer(() => {
   const [currentPage, setCurrentPage] = useState<HomePageType>("home");
-  const navigate = useNavigate();
 
   const togglePage = () => {
     setCurrentPage((prev) => (prev === "home" ? "create_character" : "home"));
   };
 
-  useEffect(() => {
-    if (userStore.initialUserCheckStatus === "FINISHED" && !userStore.user) {
-      navigate("/auth");
-    }
-  }, [userStore.initialUserCheckStatus, userStore.user]);
-
   return (
-    <Grid style={{ width: "100%" }}>
+    <Grid style={{ width: "100%" }} container>
       <Grid item xs={12}>
         {userStore.initialUserCheckStatus !== "FINISHED" ? (
           <CircularProgress size="80px" />

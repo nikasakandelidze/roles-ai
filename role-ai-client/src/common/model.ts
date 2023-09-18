@@ -10,9 +10,10 @@ export type Character = {
   name: string;
   context: string;
   characterImage: string;
+  audience: string;
 };
 
-export type CreateCharacter = Pick<Character, "name" | "context">;
+export type CreateCharacter = Pick<Character, "name" | "context" | "audience">;
 
 export type ProgressState = "IDLE" | "IN_PROGRESS" | "SUCCESS" | "FAILED";
 

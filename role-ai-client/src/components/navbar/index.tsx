@@ -38,9 +38,7 @@ export const Navigation = observer(() => {
             edge="start"
             aria-label="menu"
             sx={{ mr: 2, color: Colors.Dark.N700 }}
-          >
-            <MenuIcon />
-          </IconButton>
+          ></IconButton>
           <Typography
             variant="h6"
             component="div"

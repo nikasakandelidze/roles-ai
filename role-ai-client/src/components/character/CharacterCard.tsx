@@ -35,7 +35,7 @@ export const CharacterCard = ({ character }: { character: Character }) => {
           Learn More
         </Typography>
         <Button variant="outlined">
-          Use Character
+          Start session
           <KeyboardArrowRightIcon />
         </Button>
       </CardActions>
