@@ -8,4 +8,8 @@ export class CreateCharacterDto {
   @IsNotEmpty()
   @IsString()
   context: string;
+
+  @IsNotEmpty()
+  @IsString()
+  audience: string;
 }

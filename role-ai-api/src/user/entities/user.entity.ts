@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Character } from "../../character/entities/character.entity";
+import { Session } from "../../session/entities/session.entity";
 
 @Entity()
 export class User {
@@ -57,4 +58,7 @@ export class User {
 
   @OneToMany(() => Character, (character) => character.user)
   characters: Character[];
+
+  @OneToMany(() => Session, (session) => session.user)
+  sessions: Session;
 }

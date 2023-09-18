@@ -2,8 +2,7 @@ import { FilterCharacterDto } from "./../dto/filter-character.dto";
 import { Stream } from "openai/streaming";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { OpenAiService } from "../../openai/service/open-ai.service";
-import { ChatCompletionChunk } from "openai/resources/chat";
-import { Socket } from "socket.io";
+
 import { CreateCharacterDto } from "../dto/create-character.dto";
 import { Character } from "../entities/character.entity";
 import { DataSource, EntityManager } from "typeorm";
@@ -14,15 +13,6 @@ export class CharacterService {
     private readonly openAIService: OpenAiService,
     private readonly dataSource: DataSource,
   ) {}
-  async handlePrompt(input: string, client: Socket): Promise<void> {
-    const resultStream: Stream<ChatCompletionChunk> =
-      await this.openAIService.completeWithStream(input);
-
-    for await (const part of resultStream) {
-      console.log(part.choices[0]?.delta?.content);
-      client.emit("prompt", part.choices[0]?.delta?.content || "");
-    }
-  }
 
   async createCharacter(
     userId: string,

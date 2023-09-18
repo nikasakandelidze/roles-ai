@@ -1,5 +1,4 @@
 import { Logger } from "@nestjs/common";
-import { CharacterService } from "./../service/character.service";
 import {
   ConnectedSocket,
   MessageBody,
@@ -10,25 +9,27 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
+
 import { Server, Socket } from "socket.io";
+import { SessionService } from "../service/session.service";
 
 @WebSocketGateway({
   cors: {
     origin: "*",
   },
 })
-export class CharacterGateway
+export class SessionGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  private logger: Logger = new Logger(SessionGateway.name);
+
   /*
     The difference between client.emit() and server.emit() is actually interesting. Research what are other use cases for each.
   */
   @WebSocketServer()
   server: Server;
 
-  private readonly logger: Logger = new Logger(CharacterGateway.name);
-
-  constructor(private readonly characterService: CharacterService) {}
+  constructor(private readonly sessionService: SessionService) {}
 
   handleDisconnect(client: any) {
     console.log("Websocket disconnected");
@@ -42,7 +43,7 @@ export class CharacterGateway
     console.log("Websocket server initialized");
   }
 
-  @SubscribeMessage("prompt")
+  @SubscribeMessage("chat")
   handleEvent(
     @MessageBody() data: string,
     @ConnectedSocket() client: Socket,
@@ -57,6 +58,6 @@ export class CharacterGateway
       this.logger.log("No prompt provided");
       return { message: "Prompt parameter not provided" };
     }
-    this.characterService.handlePrompt(prompt, client);
+    // this.sessionService.handlePrompt(prompt, client);
   }
 }

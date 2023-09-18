@@ -8,6 +8,8 @@ import { OpenAIModule } from "./openai/openai.module";
 import { JwtModule } from "@nestjs/jwt";
 import { JWT_SECRET } from "./utils/constants";
 import { CryptoService } from "./utils/crypto.service";
+import { SessionModule } from './session/session.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { CryptoService } from "./utils/crypto.service";
     OpenAIModule,
     UserModule,
     CharacterModule,
+    SessionModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [CryptoService],

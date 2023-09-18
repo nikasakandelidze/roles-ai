@@ -7,30 +7,32 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "../../user/entities/user.entity";
+import { Session } from "../../session/entities/session.entity";
 
 @Entity()
-export class Character {
+export class Chat {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({
-    nullable: false,
-  })
-  name: string;
+  @ManyToOne(() => User)
+  author: User;
 
   @Column({
     nullable: false,
+    default: false,
   })
-  context: string;
+  isBot: boolean;
 
-  @Column({ nullable: true })
-  audience: string;
+  @Column({
+    nullable: false,
+  })
+  content: string;
 
-  @Column({ name: "character_image", nullable: true })
-  characterImage: string;
-
-  @ManyToOne(() => User, (user) => user.characters)
-  user: User;
+  @Column({
+    nullable: false,
+    default: true,
+  })
+  visible: boolean;
 
   @CreateDateColumn({
     name: "created_at",
@@ -45,4 +47,7 @@ export class Character {
     default: () => "CURRENT_TIMESTAMP",
   })
   updatedAt: Date;
+
+  @ManyToOne(() => Session, (session) => session.chat)
+  session: Session;
 }

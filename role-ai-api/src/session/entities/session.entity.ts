@@ -1,36 +1,34 @@
+import { Character } from "./../../character/entities/character.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "../../user/entities/user.entity";
+import { Chat } from "../../chat/entities/chat.entity";
 
 @Entity()
-export class Character {
+export class Session {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({
-    nullable: false,
+    nullable: true,
   })
-  name: string;
+  title: string;
 
-  @Column({
-    nullable: false,
-  })
-  context: string;
+  @ManyToOne(() => Character)
+  character: Character;
 
-  @Column({ nullable: true })
-  audience: string;
-
-  @Column({ name: "character_image", nullable: true })
-  characterImage: string;
-
-  @ManyToOne(() => User, (user) => user.characters)
+  @ManyToOne(() => User, (user) => user.sessions)
   user: User;
+
+  @OneToMany(() => Chat, (chat) => chat.session)
+  chat: Chat[];
 
   @CreateDateColumn({
     name: "created_at",
