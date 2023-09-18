@@ -38,7 +38,7 @@ export const routes: Array<RouteData> = [
   },
   {
     id: "session",
-    path: "/session",
+    path: "/session/:id",
     element: Session,
     title: "Session",
     visibleOnNavbar: false,

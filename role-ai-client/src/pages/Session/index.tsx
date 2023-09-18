@@ -8,16 +8,20 @@ import {
 import { observer } from "mobx-react-lite";
 import { BorderRadius, Colors, Padding } from "../../common/styles";
 import SendIcon from "@mui/icons-material/Send";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSetupWebsocketConnection } from "../../hooks/useWebsocket";
 import { Chat } from "../../common/model";
 import { sessionStore } from "../../state/sessions";
+import { useLocation, useParams } from "react-router-dom";
+import { userStore } from "../../state/user";
 
 // What about introducing custom hooks instead of polluting UI code with logic and state management?
 export const Session = observer(() => {
-  // const location = useLocation();
-  // const queryParams = new URLSearchParams(location.search);
-  // const characterId: string | null = queryParams.get("characterId");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const skipFetch: string | null = queryParams.get("skip_fetch");
+
+  const { id } = useParams();
 
   const [focused, setFocused] = useState(false);
 
@@ -26,6 +30,12 @@ export const Session = observer(() => {
   const chats: Chat[] | undefined = sessionStore.session?.chat;
 
   useSetupWebsocketConnection();
+
+  useEffect(() => {
+    if (!skipFetch && userStore.user) {
+      id && sessionStore.fetchSession(id);
+    }
+  }, [userStore.user]);
 
   return (
     <Grid container sx={{}}>
@@ -38,7 +48,10 @@ export const Session = observer(() => {
           sx={{ height: "100%" }}
         >
           <Grid item xs={12} flex="1">
-            <Box>{chats && chats.map((e: Chat) => <Box>{e.content}</Box>)}</Box>
+            <Box>
+              {chats &&
+                chats.map((e: Chat) => <Box key={e.id}>{e.content}</Box>)}
+            </Box>
           </Grid>
           <Grid item xs={6}>
             <TextField

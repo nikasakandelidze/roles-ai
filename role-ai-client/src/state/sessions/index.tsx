@@ -14,6 +14,8 @@ export const MESSAGE_TOPIC = "chat";
 export class SessionState {
   session: Session | null = null;
   startSessionProgressState: ActionProgress = { state: "IDLE", message: null };
+  fetchSessionProgressState: ActionProgress = { state: "IDLE", message: null };
+  justCreated = false;
 
   userStore: UserState;
 
@@ -24,6 +26,9 @@ export class SessionState {
       startNewSession: action,
       updateSession: action,
       sendMessage: action,
+      fetchSession: action,
+      updateNewSessionProgressState: action,
+      updateFetchSessionProgressState: action,
     });
   }
 
@@ -36,6 +41,13 @@ export class SessionState {
     message: string | null,
   ) => {
     this.startSessionProgressState = { state, message };
+  };
+
+  updateFetchSessionProgressState = (
+    state: ProgressState,
+    message: string | null,
+  ) => {
+    this.fetchSessionProgressState = { state, message };
   };
 
   updateSession = (session: Session) => {
@@ -74,6 +86,40 @@ export class SessionState {
         this.updateNewSessionProgressState(
           "FAILED",
           err.response?.data?.message || "Failed to start a new session",
+        );
+      });
+    }
+  };
+
+  fetchSession = async (id: string) => {
+    try {
+      this.updateFetchSessionProgressState("IN_PROGRESS", null);
+      const response = await axios.get(
+        `http://localhost:3001/api/session/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.userStore.user?.accessToken}`,
+          },
+        },
+      );
+      const session: Session = response.data;
+      transaction(() => {
+        this.updateSession(session);
+        this.updateFetchSessionProgressState(
+          "SUCCESS",
+          "Session fetched successfully",
+        );
+      });
+    } catch (err: any) {
+      const aerr: AxiosError = err as AxiosError;
+      if (aerr.response?.status === 401) {
+        this.userStore.resetUser();
+      }
+      console.log(err);
+      runInAction(() => {
+        this.updateFetchSessionProgressState(
+          "FAILED",
+          err.response?.data?.message || "Failed to fetch session data",
         );
       });
     }

@@ -11,9 +11,12 @@ import { Colors } from "../../common/styles";
 import { observer } from "mobx-react-lite";
 import { userStore } from "../../state/user";
 import { useMenuAnchor } from "../../hooks/useMenuAnchor";
+import { useNavigate } from "react-router-dom";
 
 export const Navigation = observer(() => {
   const { anchorEl, open, handleClick, handleClose } = useMenuAnchor();
+
+  const navigate = useNavigate();
 
   return (
     <>
@@ -32,9 +35,17 @@ export const Navigation = observer(() => {
             sx={{ mr: 2, color: Colors.Dark.N700 }}
           ></IconButton>
           <Typography
+            onClick={() => {
+              navigate("/home");
+            }}
             variant="h6"
             component="div"
-            sx={{ color: Colors.Dark.N700, flexGrow: 1 }}
+            sx={{
+              color: Colors.Dark.N700,
+              flexGrow: 1,
+              cursor: "pointer",
+              "&:hover": { color: Colors.Primary.Pacific },
+            }}
           >
             Characters.ai
           </Typography>

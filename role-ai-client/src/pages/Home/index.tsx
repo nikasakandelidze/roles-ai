@@ -59,8 +59,8 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
       sessionStore.updateNewSessionProgressState("IDLE", null);
       sessionStore.session &&
         navigate(
-          `/session?${new URLSearchParams({
-            characterId: sessionStore.session?.character.id,
+          `/session/${sessionStore.session.id}?${new URLSearchParams({
+            skip_fetch: "skip",
           })}`,
         );
     }
@@ -341,7 +341,7 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
               width: "100%",
               marginBottom: Margin.M24,
             }}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => setAudience(e.target.value)}
             value={audience}
           />
           <Box
