@@ -44,7 +44,7 @@ const LoginCard = observer(
         }
         setTryToLogin(false);
       }
-    }, [tryToLogin]);
+    }, [tryToLogin, email, password]);
 
     useEffect(() => {
       if (userStore.loginProgress.state === "FAILED") {
@@ -63,7 +63,8 @@ const LoginCard = observer(
         navigate("/home");
         userStore.updateLoginProgressState("IDLE", null);
       }
-    }, [userStore.loginProgress.state]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userStore.loginProgress.state, navigate]);
 
     return (
       <Box

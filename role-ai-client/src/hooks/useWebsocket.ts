@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { socketService } from "../common/socket";
 import { sessionStore } from "../state/sessions";
 import { Chat, ChatMessageInput } from "../common/model";
@@ -19,9 +19,9 @@ export const useSetupWebsocketConnection = (
     };
   }, []);
 
-  const send = (message: ChatMessageInput) => {
+  const send = useCallback((message: ChatMessageInput) => {
     sessionStore.sendMessage(message);
-  };
+  }, []);
 
   return { send };
 };

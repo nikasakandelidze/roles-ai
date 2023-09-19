@@ -12,7 +12,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BorderRadius, Colors, Margin, Padding } from "../../common/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { enqueueSnackbar } from "notistack";
@@ -37,10 +37,6 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
   const { setCharacterId } = useStartSession();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    charactersStore.filterCharacters();
-  }, []);
-
   // Why is sessionStore.session needed here? Why doesn't this effect work only with first argument?
   useEffect(() => {
     if (sessionStore.startSessionProgressState.state === "FAILED") {
@@ -64,7 +60,12 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
           })}`,
         );
     }
-  }, [sessionStore.startSessionProgressState, sessionStore.session]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    sessionStore.startSessionProgressState.state,
+    sessionStore.session,
+    navigate,
+  ]);
 
   return (
     <Grid container columnSpacing={2}>
@@ -117,23 +118,28 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
             "aria-labelledby": "basic-button",
           }}
         >
-          {(!charactersStore.characters ||
-            !charactersStore.characters.length) && (
-            <Typography variant="subtitle2">
-              No characters present yet, please add one!
-            </Typography>
-          )}
-          {charactersStore.characters.map((character: Character) => (
-            <MenuItem
-              key={character.id}
-              onClick={() => {
-                setCharacterId(character.id);
-                handleClose();
-              }}
-            >
-              <Typography variant="body2">{character.name}</Typography>
-            </MenuItem>
-          ))}
+          {(charactersStore.charactersFilterProgress.state === "SUCCESS" ||
+            charactersStore.charactersFilterProgress.state === "FAILED") &&
+            (!charactersStore.characters ||
+              !charactersStore.characters.length) && (
+              <Typography variant="subtitle2">
+                No characters present yet, please add one!
+              </Typography>
+            )}
+
+          {charactersStore.characters &&
+            charactersStore.characters.length &&
+            charactersStore.characters.map((character: Character) => (
+              <MenuItem
+                key={character.id}
+                onClick={() => {
+                  setCharacterId(character.id);
+                  handleClose();
+                }}
+              >
+                <Typography variant="body2">{character.name}</Typography>
+              </MenuItem>
+            ))}
         </Menu>
       </Grid>
       <Divider sx={{ width: "100%", opacity: 0.3, marginBottom: Margin.M68 }} />
@@ -146,8 +152,9 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
         alignItems="flex-start"
         spacing={4}
       >
-        {charactersStore.characters && charactersStore.characters.length ? (
-          [
+        {charactersStore.charactersFilterProgress.state === "SUCCESS" &&
+          charactersStore.characters &&
+          charactersStore.characters.length && [
             <Grid
               key={"FIRST_ONE_TEXT_KEY"}
               item
@@ -169,34 +176,40 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
                 </Grid>
               );
             }),
-          ]
-        ) : (
-          <>
-            <Typography variant="h4">No Characters present yet🤓</Typography>
-            <Box
-              sx={{ cursor: "pointer" }}
-              onClick={() => {
-                togglePage();
-              }}
-            >
-              <Typography
-                variant="h4"
-                sx={{
-                  marginLeft: Margin.M8,
-                  textDecoration: "underline",
-                  color: Colors.Blue.B400,
-                  transition: "ease-in-out 0.1s",
-                  "&:hover": {
-                    color: Colors.Green.G400,
-                    transform: "scale(1.05)",
-                  },
+          ]}
+        {charactersStore.charactersFilterProgress.state === "IN_PROGRESS" && (
+          <CircularProgress size="70px" />
+        )}
+        {(charactersStore.charactersFilterProgress.state === "SUCCESS" ||
+          charactersStore.charactersFilterProgress.state === "FAILED") &&
+          (!charactersStore.characters ||
+            !charactersStore.characters.length) && (
+            <>
+              <Typography variant="h4">No Characters present yet🤓</Typography>
+              <Box
+                sx={{ cursor: "pointer" }}
+                onClick={() => {
+                  togglePage();
                 }}
               >
-                Add one
-              </Typography>
-            </Box>
-          </>
-        )}
+                <Typography
+                  variant="h4"
+                  sx={{
+                    marginLeft: Margin.M8,
+                    textDecoration: "underline",
+                    color: Colors.Blue.B400,
+                    transition: "ease-in-out 0.1s",
+                    "&:hover": {
+                      color: Colors.Green.G400,
+                      transform: "scale(1.05)",
+                    },
+                  }}
+                >
+                  Add one
+                </Typography>
+              </Box>
+            </>
+          )}
       </Grid>
     </Grid>
   );
@@ -211,10 +224,10 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
   const [audience, setAudience] = useState(INIT_AUDIENCE_DESCRIPTION);
   const [tryToCreate, setTryToCreate] = useState(false);
 
-  useEffect(() => {
+  const create = async () => {
     if (tryToCreate) {
-      if (name && description) {
-        charactersStore.createCharacter({
+      if (name && description && audience) {
+        await charactersStore.createCharacter({
           name,
           context: description,
           audience,
@@ -231,7 +244,11 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
       }
       setTryToCreate(false);
     }
-  }, [tryToCreate]);
+  };
+
+  useEffect(() => {
+    create();
+  }, [tryToCreate, name, description, audience]);
 
   useEffect(() => {
     if (charactersStore.characterCreationProgress.state === "FAILED") {
@@ -249,7 +266,8 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
       setName("");
       setAudience("");
     }
-  }, [charactersStore.characterCreationProgress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [charactersStore.characterCreationProgress.state, togglePage]);
 
   return (
     <Grid
@@ -360,7 +378,7 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
             sx={{ marginBottom: Margin.M24 }}
           >
             {tryToCreate ? (
-              <CircularProgress size="50px" />
+              <CircularProgress size="40px" />
             ) : (
               <Button
                 variant="contained"
@@ -382,9 +400,16 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
 export const Home = observer(() => {
   const [currentPage, setCurrentPage] = useState<HomePageType>("home");
 
-  const togglePage = () => {
+  const togglePage = useCallback(() => {
     setCurrentPage((prev) => (prev === "home" ? "create_character" : "home"));
-  };
+  }, []);
+
+  useEffect(() => {
+    if (userStore.user) {
+      charactersStore.filterCharacters();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userStore.user]);
 
   return (
     <Grid style={{ width: "100%" }} container>
@@ -393,9 +418,9 @@ export const Home = observer(() => {
           <CircularProgress size="80px" />
         ) : userStore.user ? (
           currentPage === "home" ? (
-            <HomePage togglePage={() => togglePage()} />
+            <HomePage togglePage={togglePage} />
           ) : (
-            <CreatePage togglePage={() => togglePage()} />
+            <CreatePage togglePage={togglePage} />
           )
         ) : (
           <Typography variant="h4">Please login to use this page 😉</Typography>
