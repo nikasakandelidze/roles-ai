@@ -11,7 +11,13 @@ import { Character } from "../../common/model";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { Colors } from "../../common/styles";
 
-export const CharacterCard = ({ character }: { character: Character }) => {
+export const CharacterCard = ({
+  character,
+  setCharacterId,
+}: {
+  character: Character;
+  setCharacterId?: (id: string) => void;
+}) => {
   return (
     <Card>
       <CardHeader title={character.name} subheader={character.name} />
@@ -34,7 +40,12 @@ export const CharacterCard = ({ character }: { character: Character }) => {
         >
           Learn More
         </Typography>
-        <Button variant="outlined">
+        <Button
+          variant="outlined"
+          onClick={() => {
+            setCharacterId && setCharacterId(character.id);
+          }}
+        >
           Start session
           <KeyboardArrowRightIcon />
         </Button>

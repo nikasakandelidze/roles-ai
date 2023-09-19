@@ -21,9 +21,13 @@ export const USER_LATEST_CHAT_UPDATE = "USER_CHAT_UPDATE";
 export const BOT_FINISH_CHAT_UPDATE = "CHAT_OUTPUT_FINISH";
 export class SessionState {
   session: Session | null = null;
+  sessionHistory: Session[] = [];
   startSessionProgressState: ActionProgress = { state: "IDLE", message: null };
   fetchSessionProgressState: ActionProgress = { state: "IDLE", message: null };
-  justCreated = false;
+  fetchSessionHistoryProgressState: ActionProgress = {
+    state: "IDLE",
+    message: null,
+  };
 
   userStore: UserState;
 
@@ -31,6 +35,10 @@ export class SessionState {
     this.userStore = userStore;
     makeObservable(this, {
       session: observable,
+      sessionHistory: observable,
+      startSessionProgressState: observable,
+      fetchSessionProgressState: observable,
+      fetchSessionHistoryProgressState: observable,
       startNewSession: action,
       updateSession: action,
       sendMessage: action,
@@ -40,8 +48,56 @@ export class SessionState {
       updateLatestChatOfUser: action,
       updateBotChatOutput: action,
       finishBotOutputUpdate: action,
+      fetchSessionHistory: action,
+      updateFetchSessionHistoryProgressState: action,
+      updateSessionHistory: action,
     });
   }
+
+  updateSessionHistory = (sessions: Session[]) => {
+    this.sessionHistory = sessions;
+  };
+
+  updateFetchSessionHistoryProgressState = (
+    state: ProgressState,
+    message: string | null,
+  ) => {
+    this.fetchSessionHistoryProgressState = {
+      state,
+      message,
+    };
+  };
+
+  fetchSessionHistory = async () => {
+    try {
+      this.updateFetchSessionHistoryProgressState("IN_PROGRESS", null);
+      const response = await axios.get("http://localhost:3001/api/session", {
+        headers: {
+          Authorization: `Bearer ${this.userStore.user?.accessToken}`,
+        },
+      });
+      const sessions: { sessions: Session[] } = response.data;
+      transaction(() => {
+        this.updateSessionHistory(sessions.sessions);
+        this.updateFetchSessionHistoryProgressState(
+          "SUCCESS",
+          "Sessions history fetched successfully",
+        );
+      });
+    } catch (err: any) {
+      const aerr: AxiosError = err as AxiosError;
+      if (aerr.response?.status === 401) {
+        this.userStore.resetUser();
+      }
+      console.log(err);
+      runInAction(() => {
+        this.updateFetchSessionHistoryProgressState(
+          "FAILED",
+          err.response?.data?.message || "Failed to fetch sessions history",
+        );
+      });
+    }
+  };
 
   sendMessage = async (message: ChatMessageInput) => {
     socketService.send(message, USER_MESSAGE_TOPIC_INPUT);

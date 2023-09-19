@@ -9,7 +9,7 @@ import {
 import { observer } from "mobx-react-lite";
 import { BorderRadius, Colors, Padding } from "../../common/styles";
 import SendIcon from "@mui/icons-material/Send";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSetupWebsocketConnection } from "../../hooks/useWebsocket";
 import { Chat } from "../../common/model";
 import { sessionStore } from "../../state/sessions";
@@ -17,6 +17,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { userStore } from "../../state/user";
 import { ChatCard } from "../../components/session/ChatCard";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { SessionHistory } from "../../components/session/SessionHistory";
 
 // What about introducing custom hooks instead of polluting UI code with logic and state management?
 export const Session = observer(() => {
@@ -26,7 +27,6 @@ export const Session = observer(() => {
   const { id } = useParams();
 
   const [focused, setFocused] = useState(false);
-  const scrollableRef = useRef(null);
 
   const [input, setInput] = useState("");
   const [tryToSend, setTryToSend] = useState(false);
@@ -36,7 +36,7 @@ export const Session = observer(() => {
     chats &&
     chats.find(
       (chat: Chat) => chat.id === "BOT_OUTPUT_MOCK_ID_TO_BE_UPDATED",
-    ) != undefined;
+    ) !== undefined;
 
   const { send } = useSetupWebsocketConnection(
     (message) => {
@@ -68,13 +68,11 @@ export const Session = observer(() => {
     }
   }, [userStore.user]);
 
-  // Function to scroll to the bottom
-  const scrollToBottom = () => {
-    if (scrollableRef.current) {
-      const scrollableElement: any = scrollableRef.current;
-      scrollableElement.scrollTop = scrollableElement.scrollHeight;
+  useEffect(() => {
+    if (userStore.user) {
+      sessionStore.fetchSessionHistory();
     }
-  };
+  }, [userStore.user]);
 
   return (
     <Box
@@ -89,20 +87,20 @@ export const Session = observer(() => {
         flex={1}
         sx={{ backgroundColor: Colors.Light.N20 }}
         justifyContent="center"
-        ref={scrollableRef}
       >
+        <Grid item xs={2} sx={{ padding: Padding.P6 }}></Grid>
         <Grid
           item
           container
           alignItems="baseline"
-          xs={9}
+          xs={8}
           spacing={2}
           sx={{
             overflowY: "scroll",
             maxHeight: "79vh",
             paddingLeft: Padding.P24,
             paddingRight: Padding.P24,
-            paddingTop: Padding.P40,
+            paddingTop: Padding.P24,
             paddingBottom: Padding.P40,
           }}
         >
@@ -122,11 +120,18 @@ export const Session = observer(() => {
               </Grid>
             ))}
         </Grid>
+        <Grid item xs={2}></Grid>
       </Grid>
       {aiResponseInProgress && <LinearProgress />}
-      <Box sx={{ padding: Padding.P24, paddingBottom: Padding.P40 }}>
+      <Box
+        sx={{
+          padding: Padding.P24,
+          paddingBottom: Padding.P40,
+          borderTop: `1px solid ${Colors.Light.N30}`,
+        }}
+      >
         <Grid container justifyContent="center">
-          <Grid item xs={6}>
+          <Grid item xs={6} position="relative">
             <TextField
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -144,7 +149,6 @@ export const Session = observer(() => {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && focused && !aiResponseInProgress) {
                   setTryToSend(true);
-                  scrollToBottom();
                 }
               }}
               InputProps={{
@@ -153,7 +157,6 @@ export const Session = observer(() => {
                     <IconButton
                       disabled={aiResponseInProgress}
                       onClick={() => {
-                        scrollToBottom();
                         setTryToSend(true);
                       }}
                       edge="end"

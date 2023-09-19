@@ -67,7 +67,7 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
   }, [sessionStore.startSessionProgressState, sessionStore.session]);
 
   return (
-    <Grid container columnSpacing={{ xs: 2 }} sx={{ height: "100%" }}>
+    <Grid container columnSpacing={2}>
       <Grid
         minHeight="100px"
         item
@@ -117,6 +117,12 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
             "aria-labelledby": "basic-button",
           }}
         >
+          {(!charactersStore.characters ||
+            !charactersStore.characters.length) && (
+            <Typography variant="subtitle2">
+              No characters present yet, please add one!
+            </Typography>
+          )}
           {charactersStore.characters.map((character: Character) => (
             <MenuItem
               key={character.id}
@@ -156,7 +162,10 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
             ...charactersStore.characters.map((character: Character) => {
               return (
                 <Grid item xs={4} key={character.id}>
-                  <CharacterCard character={character} />
+                  <CharacterCard
+                    character={character}
+                    setCharacterId={setCharacterId}
+                  />
                 </Grid>
               );
             }),
