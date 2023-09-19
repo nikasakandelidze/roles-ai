@@ -5,12 +5,20 @@ import {
   runInAction,
   transaction,
 } from "mobx";
-import { ProgressState, Session } from "../../common/model";
+import {
+  Chat,
+  ChatMessageInput,
+  ProgressState,
+  Session,
+} from "../../common/model";
 import { ActionProgress, UserState, userStore } from "../user";
 import axios, { AxiosError } from "axios";
 import { socketService } from "../../common/socket";
 
-export const MESSAGE_TOPIC = "chat";
+export const USER_MESSAGE_TOPIC_INPUT = "CHAT_INPUT";
+export const BOT_MESSAGE_TOPIC_OUTPUT = "CHAT_OUTPUT";
+export const USER_LATEST_CHAT_UPDATE = "USER_CHAT_UPDATE";
+export const BOT_FINISH_CHAT_UPDATE = "CHAT_OUTPUT_FINISH";
 export class SessionState {
   session: Session | null = null;
   startSessionProgressState: ActionProgress = { state: "IDLE", message: null };
@@ -29,11 +37,75 @@ export class SessionState {
       fetchSession: action,
       updateNewSessionProgressState: action,
       updateFetchSessionProgressState: action,
+      updateLatestChatOfUser: action,
+      updateBotChatOutput: action,
+      finishBotOutputUpdate: action,
     });
   }
 
-  sendMessage = async (message: string) => {
-    socketService.send(message, MESSAGE_TOPIC);
+  sendMessage = async (message: ChatMessageInput) => {
+    socketService.send(message, USER_MESSAGE_TOPIC_INPUT);
+    this.session?.chat.push({
+      id: "USER_INPUT_MOCK_ID_TO_BE_UPDATED",
+      author: this.userStore.user,
+      isBot: false,
+      content: message.chat.content,
+      visible: true,
+    });
+    this.session?.chat.push({
+      id: "BOT_OUTPUT_MOCK_ID_TO_BE_UPDATED",
+      author: this.userStore.user,
+      isBot: true,
+      content: "",
+      visible: true,
+    });
+  };
+
+  updateLatestChatOfUser = async (chat: Chat) => {
+    const latestChat: Chat | undefined = this.session?.chat.find(
+      (c: Chat) => c.id === "USER_INPUT_MOCK_ID_TO_BE_UPDATED",
+    );
+    if (latestChat) {
+      latestChat.id = chat.id;
+      latestChat.author = chat.author;
+      latestChat.createdAt = chat.createdAt;
+      latestChat.isBot = chat.isBot;
+      latestChat.session = chat.session;
+      latestChat.visible = chat.visible;
+      latestChat.content = chat.content;
+    } else {
+      console.log(
+        "Failed to find latest user chat that needs to be updated but received websocket data for it",
+      );
+    }
+  };
+
+  updateBotChatOutput = async (text: string) => {
+    const botOutput: Chat | undefined = this.session?.chat.find(
+      (c: Chat) => c.id === "BOT_OUTPUT_MOCK_ID_TO_BE_UPDATED",
+    );
+    if (botOutput) {
+      botOutput.content = botOutput.content + text;
+    }
+  };
+
+  finishBotOutputUpdate = async (chat: Chat) => {
+    const botChat: Chat | undefined = this.session?.chat.find(
+      (c: Chat) => c.id === "BOT_OUTPUT_MOCK_ID_TO_BE_UPDATED",
+    );
+    if (botChat) {
+      botChat.id = chat.id;
+      botChat.author = chat.author;
+      botChat.createdAt = chat.createdAt;
+      botChat.isBot = chat.isBot;
+      botChat.session = chat.session;
+      botChat.visible = chat.visible;
+      botChat.content = chat.content;
+    } else {
+      console.log(
+        "Failed to find bot chat that needs to be updated but received websocket data for it",
+      );
+    }
   };
 
   updateNewSessionProgressState = (

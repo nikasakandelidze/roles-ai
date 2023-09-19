@@ -1,18 +1,25 @@
 import { useEffect } from "react";
 import { socketService } from "../common/socket";
 import { sessionStore } from "../state/sessions";
+import { Chat, ChatMessageInput } from "../common/model";
 
 export const useSetupWebsocketConnection = (
-  handler?: ((text: string) => void) | undefined,
+  botChatOutputHandler?: (text: string) => void,
+  latestUserChatUpdateHandler?: (chat: Chat) => void,
+  botChatOutputFinishedHandler?: (chat: Chat) => void,
 ) => {
   useEffect(() => {
-    socketService.connect(handler);
+    socketService.connect(
+      botChatOutputHandler,
+      latestUserChatUpdateHandler,
+      botChatOutputFinishedHandler,
+    );
     return () => {
       socketService.disconnect();
     };
   }, []);
 
-  const send = (message: string) => {
+  const send = (message: ChatMessageInput) => {
     sessionStore.sendMessage(message);
   };
 

@@ -3,33 +3,64 @@ import {
   Grid,
   IconButton,
   InputAdornment,
+  LinearProgress,
   TextField,
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { BorderRadius, Colors, Padding } from "../../common/styles";
 import SendIcon from "@mui/icons-material/Send";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSetupWebsocketConnection } from "../../hooks/useWebsocket";
 import { Chat } from "../../common/model";
 import { sessionStore } from "../../state/sessions";
 import { useLocation, useParams } from "react-router-dom";
 import { userStore } from "../../state/user";
+import { ChatCard } from "../../components/session/ChatCard";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 // What about introducing custom hooks instead of polluting UI code with logic and state management?
 export const Session = observer(() => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const skipFetch: string | null = queryParams.get("skip_fetch");
-
   const { id } = useParams();
 
   const [focused, setFocused] = useState(false);
+  const scrollableRef = useRef(null);
 
   const [input, setInput] = useState("");
+  const [tryToSend, setTryToSend] = useState(false);
 
   const chats: Chat[] | undefined = sessionStore.session?.chat;
+  const aiResponseInProgress: boolean | undefined =
+    chats &&
+    chats.find(
+      (chat: Chat) => chat.id === "BOT_OUTPUT_MOCK_ID_TO_BE_UPDATED",
+    ) != undefined;
 
-  useSetupWebsocketConnection();
+  const { send } = useSetupWebsocketConnection(
+    (message) => {
+      sessionStore.updateBotChatOutput(message);
+    },
+    (chat: Chat) => {
+      sessionStore.updateLatestChatOfUser(chat);
+    },
+    (chat: Chat) => {
+      sessionStore.finishBotOutputUpdate(chat);
+    },
+  );
+
+  useEffect(() => {
+    if (tryToSend && sessionStore.session && userStore.user && input) {
+      send({
+        userId: userStore.user.id,
+        sessionId: sessionStore.session.id,
+        chat: { content: input },
+      });
+      setTryToSend(false);
+      setInput("");
+    }
+  }, [tryToSend, sessionStore.session, userStore.user]);
 
   useEffect(() => {
     if (!skipFetch && userStore.user) {
@@ -37,24 +68,67 @@ export const Session = observer(() => {
     }
   }, [userStore.user]);
 
+  // Function to scroll to the bottom
+  const scrollToBottom = () => {
+    if (scrollableRef.current) {
+      const scrollableElement: any = scrollableRef.current;
+      scrollableElement.scrollTop = scrollableElement.scrollHeight;
+    }
+  };
+
   return (
-    <Grid container sx={{}}>
-      <Grid item xs={12} sx={{ height: "100%" }}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      width="100%"
+      sx={{ overflowY: "hidden" }}
+    >
+      <Grid
+        container
+        flex={1}
+        sx={{ backgroundColor: Colors.Light.N20 }}
+        justifyContent="center"
+        ref={scrollableRef}
+      >
         <Grid
+          item
           container
-          justifyContent="center"
-          alignItems="flex-end"
-          spacing={5}
-          sx={{ height: "100%" }}
+          alignItems="baseline"
+          xs={9}
+          spacing={2}
+          sx={{
+            overflowY: "scroll",
+            maxHeight: "79vh",
+            paddingLeft: Padding.P24,
+            paddingRight: Padding.P24,
+            paddingTop: Padding.P40,
+            paddingBottom: Padding.P40,
+          }}
         >
-          <Grid item xs={12} flex="1">
-            <Box>
-              {chats &&
-                chats.map((e: Chat) => <Box key={e.id}>{e.content}</Box>)}
-            </Box>
-          </Grid>
+          {chats &&
+            chats.map((chat: Chat) => (
+              <Grid
+                key={chat.id}
+                item
+                xs={12}
+                sx={{ width: "100%", display: "flex" }}
+                justifyContent={chat.isBot ? "flex-start" : "flex-end"}
+              >
+                <ChatCard
+                  chat={chat}
+                  facingDirection={chat.isBot ? "left" : "right"}
+                />
+              </Grid>
+            ))}
+        </Grid>
+      </Grid>
+      {aiResponseInProgress && <LinearProgress />}
+      <Box sx={{ padding: Padding.P24, paddingBottom: Padding.P40 }}>
+        <Grid container justifyContent="center">
           <Grid item xs={6}>
             <TextField
+              value={input}
               onChange={(e) => setInput(e.target.value)}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
@@ -67,10 +141,21 @@ export const Session = observer(() => {
                 boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.3)",
                 "& fieldset": { border: "none" },
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && focused && !aiResponseInProgress) {
+                  setTryToSend(true);
+                  scrollToBottom();
+                }
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">
                     <IconButton
+                      disabled={aiResponseInProgress}
+                      onClick={() => {
+                        scrollToBottom();
+                        setTryToSend(true);
+                      }}
                       edge="end"
                       sx={{
                         paddingLeft: Padding.P12,
@@ -85,7 +170,11 @@ export const Session = observer(() => {
                         borderRadius: BorderRadius.B16,
                       }}
                     >
-                      <SendIcon fontSize="medium" />
+                      {aiResponseInProgress ? (
+                        <MoreHorizIcon fontSize="medium" />
+                      ) : (
+                        <SendIcon fontSize="medium" />
+                      )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -93,7 +182,7 @@ export const Session = observer(() => {
             />
           </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 });

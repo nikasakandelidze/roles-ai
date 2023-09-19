@@ -18,12 +18,12 @@ export type Character = {
 
 export type Chat = {
   id: string;
-  author?: User;
+  author?: User | null | undefined;
   isBot: boolean;
   content: string;
   visible: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   session?: Session;
 };
 
@@ -42,3 +42,9 @@ export type CreateCharacter = Pick<Character, "name" | "context" | "audience">;
 export type ProgressState = "IDLE" | "IN_PROGRESS" | "SUCCESS" | "FAILED";
 
 export type InitialUserCheckProgressState = "IDLE" | "IN_PROGRESS" | "FINISHED";
+
+export type ChatMessageInput = {
+  sessionId: string;
+  userId: string;
+  chat: { content: string };
+};

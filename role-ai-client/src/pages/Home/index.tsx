@@ -67,7 +67,7 @@ const HomePage = observer(({ togglePage }: { togglePage: () => void }) => {
   }, [sessionStore.startSessionProgressState, sessionStore.session]);
 
   return (
-    <Grid container columnSpacing={{ xs: 2, height: "100%" }}>
+    <Grid container columnSpacing={{ xs: 2 }} sx={{ height: "100%" }}>
       <Grid
         minHeight="100px"
         item

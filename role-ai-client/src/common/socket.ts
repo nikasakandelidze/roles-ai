@@ -1,18 +1,45 @@
 import { Socket, io } from "socket.io-client";
-import { MESSAGE_TOPIC } from "../state/sessions";
+import {
+  BOT_FINISH_CHAT_UPDATE,
+  BOT_MESSAGE_TOPIC_OUTPUT,
+  USER_LATEST_CHAT_UPDATE,
+} from "../state/sessions";
+import { Chat, ChatMessageInput } from "./model";
 
 const URL = "http://localhost:3001";
 
 class SocketService {
   private socket: Socket | null = null;
-  private messageListeners: ((message: string) => void)[] = [];
+  private botChatUpdateListeners: ((message: string) => void)[] = [];
+  private userLastChatUpdateListeners: ((chat: Chat) => void)[] = [];
+  private botFinishChatUpdateListeners: ((chat: Chat) => void)[] = [];
 
-  connect(initHandler?: (message: string) => void) {
+  connect(
+    initHandler?: (message: string) => void,
+    latestUserChatUpdateHandler?: (chat: Chat) => void,
+    botChatOutputFinishedHandler?: (chat: Chat) => void,
+  ) {
     if (!this.socket) {
       this.socket = io(URL);
-      initHandler && this.messageListeners.push(initHandler);
-      this.socket.on(MESSAGE_TOPIC, (message: string) => {
-        this.handleMessage(message);
+
+      initHandler && this.botChatUpdateListeners.push(initHandler);
+
+      latestUserChatUpdateHandler &&
+        this.userLastChatUpdateListeners.push(latestUserChatUpdateHandler);
+
+      botChatOutputFinishedHandler &&
+        this.botFinishChatUpdateListeners.push(botChatOutputFinishedHandler);
+
+      this.socket.on(BOT_MESSAGE_TOPIC_OUTPUT, (message: string) => {
+        this.botChatUpdateListeners.forEach((listener) => listener(message));
+      });
+
+      this.socket.on(USER_LATEST_CHAT_UPDATE, (chat: Chat) => {
+        this.userLastChatUpdateListeners.forEach((listener) => listener(chat));
+      });
+
+      this.socket.on(BOT_FINISH_CHAT_UPDATE, (chat: Chat) => {
+        this.botFinishChatUpdateListeners.forEach((listener) => listener(chat));
       });
     }
   }
@@ -24,19 +51,14 @@ class SocketService {
     }
   }
 
-  send(message: string, topic: string) {
+  send(message: ChatMessageInput, topic: string) {
     if (this.socket) {
       this.socket.emit(topic, message);
     }
   }
 
   addMessageListener(listener: (message: string) => void) {
-    this.messageListeners.push(listener);
-  }
-
-  // Handle incoming messages
-  private handleMessage(message: string) {
-    this.messageListeners.forEach((listener) => listener(message));
+    this.botChatUpdateListeners.push(listener);
   }
 }
 
