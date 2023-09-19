@@ -27,6 +27,13 @@ export class SessionController {
   }
 
   @UseGuards(AuthGuard)
+  @Get("/api/session")
+  async filterSession(@Req() request: Request) {
+    const userId: string = request["user"].sub;
+    return this.sessionService.filterSessions({ userId });
+  }
+
+  @UseGuards(AuthGuard)
   @Get("/api/session/:id")
   async fetchSession(@Param("id") sessionId: string, @Req() request: any) {
     const userId: string = request["user"].sub;

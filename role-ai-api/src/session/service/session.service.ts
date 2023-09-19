@@ -11,6 +11,7 @@ import { ChatCompletionChunk } from "openai/resources/chat";
 import { Socket } from "socket.io";
 import { OpenAiService } from "../../openai/service/open-ai.service";
 import { ChatMessageDto } from "../dto/chat-message.dto";
+import { FilterSession } from "../dto/filter-session.dto";
 
 @Injectable()
 export class SessionService {
@@ -53,6 +54,24 @@ export class SessionService {
       });
       const { password, ...rest } = resultSession.user;
       return { ...resultSession, user: { ...rest } };
+    });
+  }
+
+  async filterSessions(
+    filterSessionDto: FilterSession,
+  ): Promise<{ sessions: Session[] }> {
+    return this.dataSource.transaction(async (entityManager: EntityManager) => {
+      const user: User = await entityManager.findOneBy(User, {
+        id: filterSessionDto.userId,
+      });
+      if (!user) {
+        throw new BadRequestException("Specified user not found");
+      }
+      const sessions: Session[] = await entityManager.find(Session, {
+        where: { user: { id: filterSessionDto.userId } },
+        relations: ["user", "chat", "character"],
+      });
+      return { sessions: sessions };
     });
   }
 
