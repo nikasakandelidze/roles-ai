@@ -36,7 +36,7 @@ export class SessionGateway
     console.log("Websocket disconnected");
   }
 
-  handleConnection(client: any, ...args: any[]) {
+  handleConnection(client: Socket, ...args: any[]) {
     console.log("Websocket connection initialized");
   }
 
@@ -54,6 +54,7 @@ export class SessionGateway
       return { message: "Payload not provided" };
     }
     console.log(data);
+    this.server.to;
     this.sessionService.handleChatMessage(data, client);
   }
 }
