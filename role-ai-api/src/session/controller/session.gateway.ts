@@ -54,8 +54,6 @@ export class SessionGateway
       return { message: "Payload not provided" };
     }
     console.log(data);
-    // const chatData: ChatMessageDto = JSON.parse(data) as ChatMessageDto;
-    console.log(data);
     this.sessionService.handleChatMessage(data, client);
   }
 }

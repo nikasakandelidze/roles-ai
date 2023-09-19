@@ -92,7 +92,7 @@ export class SessionService {
           relations: ["user"],
         });
         if (session && session.user.id === chatMessage.userId) {
-          await entityManager.save(
+          const userChat: Chat = await entityManager.save(
             entityManager.create(Chat, {
               ...chatMessage,
               content: chatMessage.chat.content,
@@ -100,11 +100,18 @@ export class SessionService {
               session,
             }),
           );
+          client.emit("USER_CHAT_UPDATE", userChat);
           const sessionChat: Chat[] = await entityManager.find(Chat, {
             where: { session: { id: session.id } },
             order: { createdAt: "ASC" },
           });
-          await this.generateOutput(sessionChat, client, entityManager);
+          await this.generateOutput(
+            sessionChat,
+            client,
+            user,
+            session,
+            entityManager,
+          );
         }
       }
     });
@@ -113,6 +120,8 @@ export class SessionService {
   private async generateOutput(
     chat: Chat[],
     client: Socket,
+    user: User,
+    session: Session,
     entityManager?: EntityManager,
   ) {
     const resultStream: Stream<ChatCompletionChunk> =
@@ -127,12 +136,15 @@ export class SessionService {
     }
 
     if (entityManager) {
-      await entityManager.save(
+      const chat: Chat = await entityManager.save(
         entityManager.create(Chat, {
+          author: user,
           content: responseText,
           isBot: true,
+          session,
         }),
       );
+      client.emit("CHAT_OUTPUT_FINISH", chat);
     }
   }
 }
