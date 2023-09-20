@@ -1,27 +1,28 @@
-import { useCallback, useEffect } from "react";
-import { socketService } from "../common/socket";
+import { useCallback, useEffect, useState } from "react";
 import { sessionStore } from "../state/sessions";
-import { Chat, ChatMessageInput } from "../common/model";
+import { ChatMessageInput } from "../common/model";
+import { SocketListenerData, SocketService } from "../common/socket";
 
 export const useSetupWebsocketConnection = (
-  botChatOutputHandler?: (text: string) => void,
-  latestUserChatUpdateHandler?: (chat: Chat) => void,
-  botChatOutputFinishedHandler?: (chat: Chat) => void,
+  socketHandlerData: SocketListenerData[],
 ) => {
-  useEffect(() => {
-    socketService.connect(
-      botChatOutputHandler,
-      latestUserChatUpdateHandler,
-      botChatOutputFinishedHandler,
-    );
-    return () => {
-      socketService.disconnect();
-    };
-  }, []);
+  const [socketService] = useState<SocketService>(new SocketService());
 
-  const send = useCallback((message: ChatMessageInput) => {
-    sessionStore.sendMessage(message);
-  }, []);
+  useEffect(() => {
+    if (socketService) {
+      socketService.connect(socketHandlerData);
+      return () => {
+        socketService.disconnect();
+      };
+    }
+  }, [socketService, socketHandlerData]);
+
+  const send = useCallback(
+    (message: ChatMessageInput) => {
+      sessionStore.sendMessage(message, socketService);
+    },
+    [socketService],
+  );
 
   return { send };
 };

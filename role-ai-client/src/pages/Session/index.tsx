@@ -2,13 +2,13 @@ import { Box, LinearProgress } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { Colors, Padding } from "../../common/styles";
 import { useEffect, useState } from "react";
-import { useSetupWebsocketConnection } from "../../hooks/useWebsocket";
 import { Chat } from "../../common/model";
 import { sessionStore } from "../../state/sessions";
 import { userStore } from "../../state/user";
 import { SessionInput } from "../../components/session/SessionInput";
 import { SessionChat } from "../../components/session/SessionChat";
 import { usePageParams } from "../../hooks/useUrlParams";
+import { useSessionWebSockets } from "./helpers/useSessionWebSockets";
 
 // What about introducing custom hooks instead of polluting UI code with logic and state management?
 export const Session = observer(() => {
@@ -26,17 +26,7 @@ export const Session = observer(() => {
       (chat: Chat) => chat.id === "BOT_OUTPUT_MOCK_ID_TO_BE_UPDATED",
     ) !== undefined;
 
-  const { send } = useSetupWebsocketConnection(
-    (message) => {
-      sessionStore.updateBotChatOutput(message);
-    },
-    (chat: Chat) => {
-      sessionStore.updateLatestChatOfUser(chat);
-    },
-    (chat: Chat) => {
-      sessionStore.finishBotOutputUpdate(chat);
-    },
-  );
+  const { send } = useSessionWebSockets();
 
   useEffect(() => {
     if (tryToSend && sessionStore.session && userStore.user && input) {
@@ -57,13 +47,6 @@ export const Session = observer(() => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userStore.user, id, skipFetch]);
-
-  useEffect(() => {
-    if (userStore.user) {
-      sessionStore.fetchSessionHistory();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userStore.user]);
 
   return (
     <Box

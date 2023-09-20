@@ -13,7 +13,7 @@ import {
 } from "../../common/model";
 import { ActionProgress, UserState, userStore } from "../user";
 import axios, { AxiosError } from "axios";
-import { socketService } from "../../common/socket";
+import { SocketService } from "../../common/socket";
 
 export const USER_MESSAGE_TOPIC_INPUT = "CHAT_INPUT";
 export const BOT_MESSAGE_TOPIC_OUTPUT = "CHAT_OUTPUT";
@@ -99,7 +99,10 @@ export class SessionState {
     }
   };
 
-  sendMessage = async (message: ChatMessageInput) => {
+  sendMessage = async (
+    message: ChatMessageInput,
+    socketService: SocketService,
+  ) => {
     socketService.send(message, USER_MESSAGE_TOPIC_INPUT);
     this.session?.chat.push({
       id: "USER_INPUT_MOCK_ID_TO_BE_UPDATED",
