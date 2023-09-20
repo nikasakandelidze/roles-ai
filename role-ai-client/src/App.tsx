@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { RouteData, routes } from "./routes";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "./common/styles";
@@ -7,20 +7,14 @@ import { Navigation } from "./components/navbar";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { userStore } from "./state/user";
+import { ProtectedRoute } from "./routes/ProtectedRoute";
 
 const App = observer(() => {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     userStore.checkToken();
   }, []);
-
-  useEffect(() => {
-    if (userStore.initialUserCheckStatus === "FINISHED" && !userStore.user) {
-      navigate("/auth");
-    }
-  }, [userStore.initialUserCheckStatus, userStore.user]);
 
   return (
     <SnackbarProvider autoHideDuration={1500}>
@@ -35,19 +29,35 @@ const App = observer(() => {
           }}
         >
           <div style={{ display: "flex" }}>
-            {pathname.toLowerCase() !== "/auth" &&
-              pathname.toLowerCase() !== "/" && <Navigation />}
+            {pathname.toLowerCase() !== "/" && <Navigation />}
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
-            <Routes>
-              {routes.map((route: RouteData) => (
-                <Route
-                  key={route.id}
-                  path={route.path}
-                  element={<route.element />}
-                />
-              ))}
-            </Routes>
+            {userStore.initialUserCheckStatus === "FINISHED" && (
+              <Routes>
+                {routes.map((route: RouteData) => (
+                  <Route
+                    key={route.id}
+                    path={route.path}
+                    element={
+                      route.type === "public" ? (
+                        <route.element />
+                      ) : route.type === "private" ? (
+                        <ProtectedRoute restriction={userStore.user == null}>
+                          <route.element />
+                        </ProtectedRoute>
+                      ) : (
+                        <ProtectedRoute
+                          restriction={userStore.user != null}
+                          redirect="/home"
+                        >
+                          <route.element />
+                        </ProtectedRoute>
+                      )
+                    }
+                  />
+                ))}
+              </Routes>
+            )}
           </div>
         </div>
       </ThemeProvider>

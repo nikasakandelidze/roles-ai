@@ -1,7 +1,10 @@
 import { Auth } from "../pages/Auth";
+import { NotFound } from "../pages/NotFound";
 import { Home } from "../pages/Home";
 import { Landing } from "../pages/Landing";
 import { Session } from "../pages/Session";
+
+export type RestrictionType = "public" | "restricted" | "private";
 
 export type RouteData = {
   id: string;
@@ -10,6 +13,7 @@ export type RouteData = {
   element: any;
   visibleOnNavbar: boolean;
   navbarTitle?: string;
+  type: RestrictionType;
 };
 
 export const routes: Array<RouteData> = [
@@ -19,6 +23,7 @@ export const routes: Array<RouteData> = [
     element: Landing,
     title: "Landing",
     visibleOnNavbar: false,
+    type: "public",
   },
   {
     id: "home",
@@ -27,6 +32,7 @@ export const routes: Array<RouteData> = [
     title: "Home",
     visibleOnNavbar: true,
     navbarTitle: "Home",
+    type: "private",
   },
   {
     id: "auth",
@@ -35,6 +41,7 @@ export const routes: Array<RouteData> = [
     title: "Login",
     visibleOnNavbar: true,
     navbarTitle: "Login",
+    type: "restricted",
   },
   {
     id: "session",
@@ -42,5 +49,14 @@ export const routes: Array<RouteData> = [
     element: Session,
     title: "Session",
     visibleOnNavbar: false,
+    type: "private",
+  },
+  {
+    id: "notfound",
+    path: "*",
+    element: NotFound,
+    title: "NotFound",
+    visibleOnNavbar: false,
+    type: "public",
   },
 ];

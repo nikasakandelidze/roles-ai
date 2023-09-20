@@ -408,17 +408,10 @@ const RegisterCard = observer(
 
 export const AuthCard = observer(() => {
   const [authState, setAuthState] = useState<AuthState>("login");
-  const navigate = useNavigate();
 
   const toggleAuthState = () => {
     setAuthState((prev) => (prev === "login" ? "register" : "login"));
   };
-
-  useEffect(() => {
-    if (userStore.initialUserCheckStatus === "FINISHED" && userStore.user) {
-      navigate("/home");
-    }
-  }, [userStore.user, userStore.initialUserCheckStatus]);
 
   return (
     <Box

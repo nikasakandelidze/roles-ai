@@ -414,16 +414,13 @@ export const Home = observer(() => {
   return (
     <Grid style={{ width: "100%" }} container>
       <Grid item xs={12}>
-        {userStore.initialUserCheckStatus !== "FINISHED" ? (
+        {userStore.initialUserCheckStatus !== "FINISHED" && (
           <CircularProgress size="80px" />
-        ) : userStore.user ? (
-          currentPage === "home" ? (
-            <HomePage togglePage={togglePage} />
-          ) : (
-            <CreatePage togglePage={togglePage} />
-          )
+        )}
+        {currentPage === "home" ? (
+          <HomePage togglePage={togglePage} />
         ) : (
-          <Typography variant="h4">Please login to use this page 😉</Typography>
+          <CreatePage togglePage={togglePage} />
         )}
       </Grid>
     </Grid>
