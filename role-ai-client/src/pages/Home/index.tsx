@@ -405,11 +405,11 @@ export const Home = observer(() => {
   }, []);
 
   useEffect(() => {
-    if (userStore.user) {
+    if (userStore.user?.accessToken) {
       charactersStore.filterCharacters();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userStore.user]);
+  }, [userStore.user?.accessToken]);
 
   return (
     <Grid style={{ width: "100%" }} container>

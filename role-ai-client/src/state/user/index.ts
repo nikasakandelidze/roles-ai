@@ -55,7 +55,7 @@ export class UserState {
       state: "SUCCESS",
       message: "Successfully logged in",
     };
-    localStorage.setItem(USER_LOCAL_STORAGE_KEY, JSON.stringify(user));
+    localStorage.setItem(USER_LOCAL_STORAGE_KEY, JSON.stringify(this.user));
   };
 
   checkToken = async () => {

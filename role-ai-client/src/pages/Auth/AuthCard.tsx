@@ -111,7 +111,7 @@ const LoginCard = observer(
             display="flex"
             justifyContent="center"
             alignItems="center"
-            height="150px"
+            height="180px"
           >
             <CircularProgress size="30px" />
           </Box>
