@@ -1,12 +1,12 @@
 import {
   Box,
   Button,
-  CircularProgress,
   Divider,
+  LinearProgress,
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Colors, Margin, Padding } from "../../common/styles";
 import { GoogleIcon } from "../../common/icons";
 import { enqueueSnackbar } from "notistack";
@@ -54,14 +54,6 @@ const LoginCard = observer(
           });
         }
         userStore.updateLoginProgressState("IDLE", null);
-      } else if (userStore.loginProgress.state === "SUCCESS") {
-        if (userStore.loginProgress.message) {
-          enqueueSnackbar(userStore.loginProgress.message, {
-            variant: "success",
-          });
-        }
-        navigate("/home");
-        userStore.updateLoginProgressState("IDLE", null);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userStore.loginProgress.state, navigate]);
@@ -106,57 +98,58 @@ const LoginCard = observer(
           }}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {userStore.loginProgress.state === "IN_PROGRESS" ? (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            height="180px"
-          >
-            <CircularProgress size="30px" />
-          </Box>
-        ) : (
-          <>
-            <Button
-              onClick={() => {
-                setTryToLogin(true);
-              }}
-              color="primary"
-              variant="contained"
-              sx={{
-                width: "350px",
-                padding: Padding.P12,
-                marginBottom: Margin.M12,
-              }}
-            >
-              Login
-            </Button>
-            <Typography
-              variant="body1"
-              sx={{ color: Colors.Dark.N700, marginBottom: Margin.M12 }}
-            >
-              Or
-            </Typography>
-            <Button
-              onClick={() =>
-                enqueueSnackbar("Google login coming soon!", {
-                  variant: "info",
-                })
-              }
-              color="primary"
-              variant="outlined"
-              sx={{
-                width: "350px",
-                padding: Padding.P12,
-                marginBottom: Margin.M12,
-              }}
-            >
-              <GoogleIcon />
-              <Box sx={{ width: "10px" }}></Box>
-              Login With Google
-            </Button>
-          </>
-        )}
+        <Button
+          disabled={userStore.loginProgress.state === "IN_PROGRESS"}
+          onClick={() => {
+            setTryToLogin(true);
+          }}
+          color="primary"
+          variant="contained"
+          sx={{
+            width: "350px",
+            padding: Padding.P12,
+            marginBottom: Margin.M12,
+            opacity: userStore.loginProgress.state === "IN_PROGRESS" ? 0 : 1,
+          }}
+        >
+          Login
+        </Button>
+        <LinearProgress
+          sx={{
+            width: "80%",
+            opacity: userStore.loginProgress.state === "IN_PROGRESS" ? 1 : 0,
+          }}
+        />
+        <Typography
+          variant="body1"
+          sx={{
+            color: Colors.Dark.N700,
+            marginBottom: Margin.M12,
+            opacity: userStore.loginProgress.state === "IN_PROGRESS" ? 0 : 1,
+          }}
+        >
+          Or
+        </Typography>
+        <Button
+          disabled={userStore.loginProgress.state === "IN_PROGRESS"}
+          onClick={() =>
+            enqueueSnackbar("Google login coming soon!", {
+              variant: "info",
+            })
+          }
+          color="primary"
+          variant="outlined"
+          sx={{
+            width: "350px",
+            padding: Padding.P12,
+            marginBottom: Margin.M12,
+            opacity: userStore.loginProgress.state === "IN_PROGRESS" ? 0 : 1,
+          }}
+        >
+          <GoogleIcon />
+          <Box sx={{ width: "10px" }}></Box>
+          Login With Google
+        </Button>
         <Divider
           orientation="horizontal"
           sx={{
@@ -220,7 +213,6 @@ const RegisterCard = observer(
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
     const [tryToRegister, setTryToRegister] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
       if (tryToRegister) {
@@ -263,7 +255,7 @@ const RegisterCard = observer(
         toggleAuthState();
         userStore.updateLoginProgressState("IDLE", null);
       }
-    }, [userStore.registerProgress]);
+    }, [userStore.registerProgress.state]);
 
     return (
       <Box
@@ -325,13 +317,24 @@ const RegisterCard = observer(
             width: "350px",
             padding: Padding.P12,
             marginBottom: Margin.M12,
+            opacity: userStore.registerProgress.state === "IN_PROGRESS" ? 0 : 1,
           }}
         >
           Sign Up
         </Button>
+        <LinearProgress
+          sx={{
+            width: "80%",
+            opacity: userStore.registerProgress.state === "IN_PROGRESS" ? 1 : 0,
+          }}
+        />
         <Typography
           variant="body1"
-          sx={{ color: Colors.Dark.N700, marginBottom: Margin.M12 }}
+          sx={{
+            color: Colors.Dark.N700,
+            marginBottom: Margin.M12,
+            opacity: userStore.registerProgress.state === "IN_PROGRESS" ? 0 : 1,
+          }}
         >
           Or
         </Typography>
@@ -343,6 +346,7 @@ const RegisterCard = observer(
             width: "350px",
             padding: Padding.P12,
             marginBottom: Margin.M12,
+            opacity: userStore.registerProgress.state === "IN_PROGRESS" ? 0 : 1,
           }}
         >
           <GoogleIcon />
@@ -408,10 +412,9 @@ const RegisterCard = observer(
 
 export const AuthCard = observer(() => {
   const [authState, setAuthState] = useState<AuthState>("login");
-
-  const toggleAuthState = () => {
+  const toggleAuthState = useCallback(() => {
     setAuthState((prev) => (prev === "login" ? "register" : "login"));
-  };
+  }, []);
 
   return (
     <Box

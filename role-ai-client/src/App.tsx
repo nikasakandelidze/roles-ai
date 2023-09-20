@@ -10,8 +10,6 @@ import { userStore } from "./state/user";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 
 const App = observer(() => {
-  const { pathname } = useLocation();
-
   useEffect(() => {
     userStore.checkToken();
   }, []);
@@ -28,9 +26,7 @@ const App = observer(() => {
             flexDirection: "column",
           }}
         >
-          <div style={{ display: "flex" }}>
-            {pathname.toLowerCase() !== "/" && <Navigation />}
-          </div>
+          <div style={{ display: "flex" }}>{<Navigation />}</div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
             {userStore.initialUserCheckStatus === "FINISHED" && (
               <Routes>

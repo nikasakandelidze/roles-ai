@@ -411,6 +411,17 @@ export const Home = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userStore.user?.accessToken]);
 
+  useEffect(() => {
+    if (userStore.loginProgress.state === "SUCCESS") {
+      if (userStore.loginProgress.message) {
+        enqueueSnackbar(userStore.loginProgress.message, {
+          variant: "success",
+        });
+      }
+      userStore.updateLoginProgressState("IDLE", null);
+    }
+  }, [userStore.loginProgress.state]);
+
   return (
     <Grid style={{ width: "100%" }} container>
       <Grid item xs={12}>

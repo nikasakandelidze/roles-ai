@@ -5,18 +5,17 @@ import { useEffect, useState } from "react";
 import { useSetupWebsocketConnection } from "../../hooks/useWebsocket";
 import { Chat } from "../../common/model";
 import { sessionStore } from "../../state/sessions";
-import { useLocation, useParams } from "react-router-dom";
 import { userStore } from "../../state/user";
 import { SessionInput } from "../../components/session/SessionInput";
 import { SessionChat } from "../../components/session/SessionChat";
+import { usePageParams } from "../../hooks/useUrlParams";
 
 // What about introducing custom hooks instead of polluting UI code with logic and state management?
 export const Session = observer(() => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const skipFetch: string | null = queryParams.get("skip_fetch");
-  const { id } = useParams();
-
+  const { queryParam: skipFetch, pathParam: id } = usePageParams(
+    "skip_fetch",
+    "id",
+  );
   const [input, setInput] = useState("");
   const [tryToSend, setTryToSend] = useState(false);
 

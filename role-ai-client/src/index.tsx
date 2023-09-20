@@ -9,6 +9,7 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import React from "react";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -16,9 +17,9 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <BrowserRouter>
-    {/* // <React.StrictMode> */}
-    <App />
-    {/* // </React.StrictMode> */}
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
   </BrowserRouter>,
 );
 
