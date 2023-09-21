@@ -6,9 +6,15 @@ import { SessionService } from "./service/session.service";
 import { SessionController } from "./controller/session.controller";
 import { SessionGateway } from "./controller/session.gateway";
 import { OpenAIModule } from "../openai/openai.module";
+import { TaskQueueModule } from "../task-queue/task-queue.module";
 
 @Module({
-  imports: [ChatModule, OpenAIModule, TypeOrmModule.forFeature([Session])],
+  imports: [
+    ChatModule,
+    OpenAIModule,
+    TypeOrmModule.forFeature([Session]),
+    TaskQueueModule,
+  ],
   exports: [TypeOrmModule],
   providers: [SessionService, SessionGateway],
   controllers: [SessionController],

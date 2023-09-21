@@ -6,6 +6,8 @@ import { CreateCharacterDto } from "../dto/create-character.dto";
 import { Character } from "../entities/character.entity";
 import { DataSource, EntityManager } from "typeorm";
 import { User } from "../../user/entities/user.entity";
+import { Task } from "../../task-queue/entities/task.entity";
+import { TASK_QUEUE_TOPICS } from "../../utils/constants";
 @Injectable()
 export class CharacterService {
   constructor(
@@ -32,12 +34,22 @@ export class CharacterService {
           "Character with specified name already exists",
         );
       }
-      return await entityManager.save(
+      const createdCharacter: Character = await entityManager.save(
         entityManager.create(Character, {
           ...createCharacterDto,
           user: user,
         }),
       );
+
+      await entityManager.save(
+        Task,
+        entityManager.create(Task, {
+          type: TASK_QUEUE_TOPICS.CHARACTER_SUGGESTED_PROMPTS_FILL,
+          data: { character: createdCharacter },
+        }),
+      );
+
+      return createdCharacter;
     });
   }
 

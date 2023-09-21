@@ -45,4 +45,14 @@ export class Character {
     default: () => "CURRENT_TIMESTAMP",
   })
   updatedAt: Date;
+
+  @Column({ nullable: true, type: "jsonb" })
+  suggestedPrompts: PromptSuggestions;
 }
+
+export type PromptSuggestions = {
+  array: {
+    content: string;
+    metadata?: string;
+  }[];
+};

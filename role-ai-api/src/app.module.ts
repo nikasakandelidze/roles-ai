@@ -10,9 +10,12 @@ import { JWT_SECRET } from "./utils/constants";
 import { CryptoService } from "./utils/crypto.service";
 import { SessionModule } from "./session/session.module";
 import { ChatModule } from "./chat/chat.module";
+import { TaskQueueModule } from "./task-queue/task-queue.module";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath:
         process.env.NODE_ENV === "development" ? ".env.development" : ".env",
@@ -29,6 +32,7 @@ import { ChatModule } from "./chat/chat.module";
     CharacterModule,
     SessionModule,
     ChatModule,
+    TaskQueueModule,
   ],
   controllers: [],
   providers: [CryptoService],

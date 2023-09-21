@@ -1,9 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import OpenAI from "openai";
-import { ChatCompletionChunk } from "openai/resources/chat";
+import { ChatCompletion, ChatCompletionChunk } from "openai/resources/chat";
 import { Stream } from "openai/streaming";
 import { Chat } from "../../chat/entities/chat.entity";
+
+export type OpenAIChatInput = {
+  content: string;
+  role: "system" | "user" | "assistant";
+};
 
 @Injectable()
 export class OpenAiService {
@@ -31,6 +36,13 @@ export class OpenAiService {
           content: chat.content,
         };
       }),
+    });
+  }
+
+  async generateOutput(inputs: OpenAIChatInput[]): Promise<ChatCompletion> {
+    return this.openAiClient.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: inputs,
     });
   }
 }
