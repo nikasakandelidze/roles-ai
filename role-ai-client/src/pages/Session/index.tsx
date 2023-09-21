@@ -1,7 +1,7 @@
 import { Box, LinearProgress } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { Colors, Margin, Padding } from "../../common/styles";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Chat } from "../../common/model";
 import { sessionStore } from "../../state/sessions";
 import { userStore } from "../../state/user";
@@ -19,6 +19,7 @@ export const Session = observer(() => {
   );
   const [input, setInput] = useState("");
   const [tryToSend, setTryToSend] = useState(false);
+  const inputRef = useRef<any>(null);
 
   const chats: Chat[] | undefined = sessionStore.session?.chat;
   const aiResponseInProgress: boolean | undefined =
@@ -49,6 +50,10 @@ export const Session = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userStore.user, id, skipFetch]);
 
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, []);
+
   const showSuggestions = (sessionStore?.session?.chat?.length || 0) <= 1;
 
   return (
@@ -73,10 +78,14 @@ export const Session = observer(() => {
       >
         <Suggestions
           sx={{ marginBottom: Margin.M16, marginTop: Margin.M16 }}
-          setSuggestion={setInput}
+          setSuggestion={(data) => {
+            setInput(data);
+            inputRef?.current?.focus();
+          }}
           show={showSuggestions} // Here setting 0 since if there is no chat length then let's show suggestions
         />
         <SessionInput
+          inputRef={inputRef}
           setTryToSend={setTryToSend}
           input={input}
           setInput={setInput}

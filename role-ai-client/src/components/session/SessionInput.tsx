@@ -2,25 +2,32 @@ import { Grid, IconButton, InputAdornment, TextField } from "@mui/material";
 import { BorderRadius, Colors, Padding } from "../../common/styles";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import SendIcon from "@mui/icons-material/Send";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const SessionInput = ({
   input,
   setInput,
   setTryToSend,
   disable,
+  inputRef,
 }: {
   input: string;
   setInput: (data: string) => void;
   setTryToSend: (value: boolean) => void;
   disable: boolean;
+  inputRef?: any;
 }) => {
   const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, []);
 
   return (
     <Grid container justifyContent="center">
       <Grid item xs={6} position="relative">
         <TextField
+          inputRef={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onFocus={() => setFocused(true)}
