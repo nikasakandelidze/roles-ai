@@ -39,7 +39,7 @@ export class UserService {
         { accessToken: jwtToken },
       );
       const { password, ...restUser } = user;
-      return { accessToken: jwtToken, ...restUser };
+      return { ...restUser, accessToken: jwtToken };
     });
   }
 

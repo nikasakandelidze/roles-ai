@@ -22,7 +22,7 @@ import { ChatModule } from "./chat/chat.module";
     JwtModule.register({
       global: true,
       secret: JWT_SECRET,
-      signOptions: { expiresIn: "2h" },
+      signOptions: { expiresIn: "1d" },
     }),
     OpenAIModule,
     UserModule,

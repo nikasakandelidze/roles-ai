@@ -9,10 +9,13 @@ import { JwtService } from "@nestjs/jwt";
 import { JWT_SECRET } from "./constants";
 import { User } from "../user/entities/user.entity";
 import { Request } from "express";
+import * as moment from "moment";
 
 export type JwtPayload = {
   sub: string; // id
   username: string; // email
+  issuedAt: number;
+  expiresAt: number;
 };
 
 @Injectable()
@@ -21,8 +24,15 @@ export class CryptoService {
   constructor(private readonly jwtService: JwtService) {}
 
   async generateJwt(user: User): Promise<string> {
-    const jwtPayload: JwtPayload = { sub: user.id, username: user.email };
-    const signResult: string = await this.jwtService.signAsync(jwtPayload);
+    const jwtPayload: JwtPayload = {
+      sub: user.id,
+      username: user.email,
+      issuedAt: moment().milliseconds(),
+      expiresAt: moment().add("60", "s").milliseconds(),
+    };
+    const signResult: string = await this.jwtService.signAsync(jwtPayload, {
+      secret: JWT_SECRET,
+    });
     return signResult;
   }
 }
