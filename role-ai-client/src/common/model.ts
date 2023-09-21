@@ -14,6 +14,7 @@ export type Character = {
   user?: User;
   createdAt?: string;
   updatedAt?: string;
+  suggestedPrompts: { array: { content: string; metadata?: string }[] };
 };
 
 export type Chat = {

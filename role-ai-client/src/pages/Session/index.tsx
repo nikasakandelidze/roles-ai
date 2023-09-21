@@ -1,6 +1,6 @@
 import { Box, LinearProgress } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import { Colors, Padding } from "../../common/styles";
+import { Colors, Margin, Padding } from "../../common/styles";
 import { useEffect, useState } from "react";
 import { Chat } from "../../common/model";
 import { sessionStore } from "../../state/sessions";
@@ -9,6 +9,7 @@ import { SessionInput } from "../../components/session/SessionInput";
 import { SessionChat } from "../../components/session/SessionChat";
 import { usePageParams } from "../../hooks/useUrlParams";
 import { useSessionWebSockets } from "./helpers/useSessionWebSockets";
+import { Suggestions } from "../../components/session/Suggestions";
 
 // What about introducing custom hooks instead of polluting UI code with logic and state management?
 export const Session = observer(() => {
@@ -48,6 +49,8 @@ export const Session = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userStore.user, id, skipFetch]);
 
+  const showSuggestions = (sessionStore?.session?.chat?.length || 0) <= 1;
+
   return (
     <Box
       display="flex"
@@ -60,11 +63,19 @@ export const Session = observer(() => {
       {aiResponseInProgress && <LinearProgress />}
       <Box
         sx={{
-          padding: Padding.P24,
+          display: "flex",
+          flexDirection: "column",
+          padding: showSuggestions ? 0 : Padding.P40,
           paddingBottom: Padding.P40,
           borderTop: `1px solid ${Colors.Light.N30}`,
+          alignItems: "center",
         }}
       >
+        <Suggestions
+          sx={{ marginBottom: Margin.M16, marginTop: Margin.M16 }}
+          setSuggestion={setInput}
+          show={showSuggestions} // Here setting 0 since if there is no chat length then let's show suggestions
+        />
         <SessionInput
           setTryToSend={setTryToSend}
           input={input}
