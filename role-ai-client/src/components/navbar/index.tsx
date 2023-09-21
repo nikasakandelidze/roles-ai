@@ -7,11 +7,12 @@ import {
   Toolbar,
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import { Colors } from "../../common/styles";
+import { Colors, Margin } from "../../common/styles";
 import { observer } from "mobx-react-lite";
 import { userStore } from "../../state/user";
 import { useMenuAnchor } from "../../hooks/useMenuAnchor";
 import { useNavigate } from "react-router-dom";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export const Navigation = observer(() => {
   const { anchorEl, open, handleClick, handleClose } = useMenuAnchor();
@@ -75,6 +76,7 @@ export const Navigation = observer(() => {
               }}
             >
               Sign out
+              <LogoutIcon sx={{ marginLeft: Margin.M8 }} />
             </MenuItem>
           </Menu>
         </Toolbar>
