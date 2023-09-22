@@ -3,6 +3,8 @@ import { NotFound } from "../pages/NotFound";
 import { Home } from "../pages/Home";
 import { Landing } from "../pages/Landing";
 import { Session } from "../pages/Session";
+import { SessionHistory } from "../components/session/SessionHistory";
+import { AuthButton } from "../components/navbar/AuthButton";
 
 export type RestrictionType = "public" | "restricted" | "private";
 
@@ -14,6 +16,7 @@ export type RouteData = {
   visibleOnNavbar: boolean;
   navbarTitle?: string;
   type: RestrictionType;
+  navbarElement?: any;
 };
 
 export const routes: Array<RouteData> = [
@@ -22,8 +25,9 @@ export const routes: Array<RouteData> = [
     path: "/",
     element: Landing,
     title: "Landing",
-    visibleOnNavbar: false,
-    type: "public",
+    visibleOnNavbar: true,
+    type: "restricted",
+    navbarTitle: "Home",
   },
   {
     id: "home",
@@ -33,15 +37,6 @@ export const routes: Array<RouteData> = [
     visibleOnNavbar: true,
     navbarTitle: "Home",
     type: "private",
-  },
-  {
-    id: "auth",
-    path: "/auth",
-    element: Auth,
-    title: "Login",
-    visibleOnNavbar: true,
-    navbarTitle: "Login",
-    type: "restricted",
   },
   {
     id: "session",
@@ -58,5 +53,24 @@ export const routes: Array<RouteData> = [
     title: "NotFound",
     visibleOnNavbar: false,
     type: "public",
+  },
+  {
+    id: "sessionHistory",
+    path: "/session-history",
+    element: SessionHistory,
+    title: "Sessions History",
+    visibleOnNavbar: true,
+    type: "private",
+    navbarTitle: "Sessions History",
+  },
+  {
+    id: "auth",
+    path: "/auth",
+    element: Auth,
+    title: "Login",
+    visibleOnNavbar: true,
+    navbarTitle: "Get Started",
+    type: "restricted",
+    navbarElement: AuthButton,
   },
 ];

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Character } from "../../common/model";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { Colors } from "../../common/styles";
+import { BorderRadius, Colors } from "../../common/styles";
 
 export const CharacterCard = ({
   character,
@@ -19,7 +19,7 @@ export const CharacterCard = ({
   setCharacterId?: (id: string) => void;
 }) => {
   return (
-    <Card>
+    <Card sx={{ borderRadius: BorderRadius.B16 }}>
       <CardHeader title={character.name} subheader={character.name} />
       <CardContent sx={{ overflow: "hidden", overflowWrap: "break-word" }}>
         <Typography variant="body1">
@@ -38,7 +38,7 @@ export const CharacterCard = ({
             },
           }}
         >
-          Learn More
+          Your sessions with this character
         </Typography>
         <Button
           variant="outlined"
