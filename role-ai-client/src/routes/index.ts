@@ -3,8 +3,8 @@ import { NotFound } from "../pages/NotFound";
 import { Home } from "../pages/Home";
 import { Landing } from "../pages/Landing";
 import { Session } from "../pages/Session";
-import { SessionHistory } from "../components/session/SessionHistory";
 import { AuthButton } from "../components/navbar/AuthButton";
+import { SessionHistory } from "../pages/SessionHistory";
 
 export type RestrictionType = "public" | "restricted" | "private";
 

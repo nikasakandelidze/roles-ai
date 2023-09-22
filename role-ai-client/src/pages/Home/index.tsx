@@ -6,6 +6,7 @@ import {
   Chip,
   CircularProgress,
   Divider,
+  Fade,
   Grid,
   Menu,
   MenuItem,
@@ -277,121 +278,123 @@ const CreatePage = observer(({ togglePage }: { togglePage: () => void }) => {
       sx={{ height: "100%" }}
     >
       <Grid item xs={5}>
-        <Card
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            padding: Padding.P8,
-            borderRadius: BorderRadius.B8,
-          }}
-        >
-          <Box
-            display="flex"
-            width="100%"
-            justifyContent="center"
-            alignItems="center"
+        <Fade in={true}>
+          <Card
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              padding: Padding.P8,
+              borderRadius: BorderRadius.B8,
+            }}
           >
             <Box
               display="flex"
-              flex="1"
+              width="100%"
               justifyContent="center"
-              alignItems="flex-start"
-            >
-              <Chip
-                onClick={() => {
-                  togglePage();
-                }}
-                icon={<ArrowBackIosIcon fontSize="small" />}
-                label="Back"
-                clickable
-              />
-            </Box>
-            <Box
-              display="flex"
-              flex="8"
-              flexDirection="column"
               alignItems="center"
             >
-              <Typography variant="h5">
-                Specify details of your next AI character
-              </Typography>
-              <Typography variant="body2">
-                These details will be used upon interacting with this character
-                through chat
-              </Typography>
-            </Box>
-            <Box display="flex" flex="1"></Box>
-          </Box>
-          <Divider
-            variant="middle"
-            sx={{
-              width: "60%",
-              marginTop: Margin.M24,
-              marginBottom: Margin.M24,
-              opacity: 0.3,
-            }}
-          />
-          <TextField
-            placeholder="Name"
-            variant="outlined"
-            sx={{
-              backgroundColor: Colors.Light.N0,
-              width: "100%",
-              marginBottom: Margin.M24,
-            }}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
-            placeholder="Describe your character"
-            variant="outlined"
-            minRows={"5"}
-            maxRows={"10"}
-            multiline
-            sx={{
-              backgroundColor: Colors.Light.N0,
-              width: "100%",
-              marginBottom: Margin.M24,
-            }}
-            onChange={(e) => setDescription(e.target.value)}
-            value={description}
-          />
-          <TextField
-            placeholder="Describe the audience of the chat"
-            variant="outlined"
-            minRows={"3"}
-            maxRows={"10"}
-            multiline
-            sx={{
-              backgroundColor: Colors.Light.N0,
-              width: "100%",
-              marginBottom: Margin.M24,
-            }}
-            onChange={(e) => setAudience(e.target.value)}
-            value={audience}
-          />
-          <Box
-            display="flex"
-            justifyContent="center"
-            width="100%"
-            sx={{ marginBottom: Margin.M24 }}
-          >
-            {tryToCreate ? (
-              <CircularProgress size="40px" />
-            ) : (
-              <Button
-                variant="contained"
-                sx={{ width: "70%", padding: Padding.P8 }}
-                onClick={() => {
-                  setTryToCreate(true);
-                }}
+              <Box
+                display="flex"
+                flex="1"
+                justifyContent="center"
+                alignItems="flex-start"
               >
-                Create
-              </Button>
-            )}
-          </Box>
-        </Card>
+                <Chip
+                  onClick={() => {
+                    togglePage();
+                  }}
+                  icon={<ArrowBackIosIcon fontSize="small" />}
+                  label="Back"
+                  clickable
+                />
+              </Box>
+              <Box
+                display="flex"
+                flex="8"
+                flexDirection="column"
+                alignItems="center"
+              >
+                <Typography variant="h5">
+                  Specify details of your next AI character
+                </Typography>
+                <Typography variant="body2">
+                  These details will be used upon interacting with this
+                  character through chat
+                </Typography>
+              </Box>
+              <Box display="flex" flex="1"></Box>
+            </Box>
+            <Divider
+              variant="middle"
+              sx={{
+                width: "60%",
+                marginTop: Margin.M24,
+                marginBottom: Margin.M24,
+                opacity: 0.3,
+              }}
+            />
+            <TextField
+              placeholder="Name"
+              variant="outlined"
+              sx={{
+                backgroundColor: Colors.Light.N0,
+                width: "100%",
+                marginBottom: Margin.M24,
+              }}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              placeholder="Describe your character"
+              variant="outlined"
+              minRows={"5"}
+              maxRows={"10"}
+              multiline
+              sx={{
+                backgroundColor: Colors.Light.N0,
+                width: "100%",
+                marginBottom: Margin.M24,
+              }}
+              onChange={(e) => setDescription(e.target.value)}
+              value={description}
+            />
+            <TextField
+              placeholder="Describe the audience of the chat"
+              variant="outlined"
+              minRows={"3"}
+              maxRows={"10"}
+              multiline
+              sx={{
+                backgroundColor: Colors.Light.N0,
+                width: "100%",
+                marginBottom: Margin.M24,
+              }}
+              onChange={(e) => setAudience(e.target.value)}
+              value={audience}
+            />
+            <Box
+              display="flex"
+              justifyContent="center"
+              width="100%"
+              sx={{ marginBottom: Margin.M24 }}
+            >
+              {tryToCreate ? (
+                <CircularProgress size="40px" />
+              ) : (
+                <Button
+                  variant="contained"
+                  sx={{ width: "70%", padding: Padding.P8 }}
+                  onClick={() => {
+                    setTryToCreate(true);
+                  }}
+                >
+                  Create
+                </Button>
+              )}
+            </Box>
+          </Card>
+        </Fade>
       </Grid>
     </Grid>
   );

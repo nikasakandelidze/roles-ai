@@ -10,6 +10,7 @@ import {
 import { Character } from "../../common/model";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { BorderRadius, Colors } from "../../common/styles";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 export const CharacterCard = ({
   character,
@@ -30,7 +31,12 @@ export const CharacterCard = ({
       <Divider sx={{ width: " 100%", opacity: 0.2 }} />
       <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography
+          display="flex"
+          alignItems="center"
+          variant="subtitle1"
           sx={{
+            color: Colors.Dark.N700,
+            fontWeight: "400",
             cursor: "pointer",
             "&:hover": {
               textDecoration: "underline",
@@ -38,7 +44,8 @@ export const CharacterCard = ({
             },
           }}
         >
-          Your sessions with this character
+          Your sessions
+          <OpenInNewIcon fontSize="small" />
         </Typography>
         <Button
           variant="outlined"
