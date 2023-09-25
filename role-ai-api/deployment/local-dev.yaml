@@ -54,7 +54,7 @@ spec:
             - name: POSTGRES_PASSWORD
               value: postgres
             - name: OPENAI_KEY
-              value: # Put your OPENAI_KEY here
+              value: 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
 ---
 # service.yaml
 apiVersion: v1
