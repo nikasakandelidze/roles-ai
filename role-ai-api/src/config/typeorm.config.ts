@@ -9,7 +9,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
 
   public createTypeOrmOptions(): TypeOrmModuleOptions {
     console.log(this.config.get("POSTGRES_HOST"));
-    console.log(this.config);
+    console.log(this.config.get("POSTGRES_PORT"));
     console.log(this.config.get("POSTGRES_USER"));
     return {
       type: "postgres",
