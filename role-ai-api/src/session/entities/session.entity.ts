@@ -21,7 +21,7 @@ export class Session {
   })
   title: string;
 
-  @ManyToOne(() => Character)
+  @ManyToOne(() => Character, (character) => character.sessions)
   character: Character;
 
   @ManyToOne(() => User, (user) => user.sessions)
@@ -29,6 +29,9 @@ export class Session {
 
   @OneToMany(() => Chat, (chat) => chat.session)
   chat: Chat[];
+
+  @Column({ type: "jsonb", nullable: true })
+  discussionTopics: DiscussionTopics[];
 
   @CreateDateColumn({
     name: "created_at",
@@ -44,3 +47,7 @@ export class Session {
   })
   updatedAt: Date;
 }
+
+export type DiscussionTopics = {
+  topic: string;
+};

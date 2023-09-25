@@ -33,4 +33,13 @@ export class CharacterController {
     const jwtPayload: JwtPayload = request["user"];
     return this.characterService.filterCharacters({ userId: jwtPayload.sub });
   }
+
+  @UseGuards(AuthGuard)
+  @Get("/api/character/sessions")
+  async filterCharacterSessions(@Request() request: any): Promise<any> {
+    const jwtPayload: JwtPayload = request["user"];
+    return this.characterService.filterCharacterSessions({
+      userId: jwtPayload.sub,
+    });
+  }
 }

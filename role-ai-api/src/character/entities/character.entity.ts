@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "../../user/entities/user.entity";
+import { Session } from "../../session/entities/session.entity";
 
 @Entity()
 export class Character {
@@ -48,6 +50,9 @@ export class Character {
 
   @Column({ nullable: true, type: "jsonb" })
   suggestedPrompts: PromptSuggestions;
+
+  @OneToMany(() => Session, (session) => session.character)
+  sessions: Session[];
 }
 
 export type PromptSuggestions = {

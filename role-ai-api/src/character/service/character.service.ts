@@ -8,6 +8,7 @@ import { DataSource, EntityManager } from "typeorm";
 import { User } from "../../user/entities/user.entity";
 import { Task } from "../../task-queue/entities/task.entity";
 import { TASK_QUEUE_TOPICS } from "../../utils/constants";
+import { Session } from "../../session/entities/session.entity";
 @Injectable()
 export class CharacterService {
   constructor(
@@ -68,6 +69,28 @@ export class CharacterService {
           where: { user: { id: user.id } },
           relations: ["user"],
         });
+      },
+    );
+    return { characters: result };
+  }
+
+  async filterCharacterSessions(
+    filter: FilterCharacterDto,
+  ): Promise<{ characters: Character[] }> {
+    const result: Character[] = await this.dataSource.transaction(
+      async (entityManager: EntityManager) => {
+        const user: User = await entityManager.findOneBy(User, {
+          id: filter.userId,
+        });
+        if (!user) {
+          throw new BadRequestException("User with specified id not found");
+        }
+        return entityManager
+          .createQueryBuilder(Character, "character")
+          .leftJoinAndSelect("character.sessions", "sessions")
+          .leftJoinAndSelect("sessions.user", "user")
+          .where("user.id = :userId", { userId: filter.userId })
+          .getMany();
       },
     );
     return { characters: result };

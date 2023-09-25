@@ -7,11 +7,15 @@ import { Character } from "../../character/entities/character.entity";
 import { ChatService } from "../../chat/service/chat.service";
 import { Chat } from "../../chat/entities/chat.entity";
 import { Stream } from "openai/streaming";
-import { ChatCompletionChunk } from "openai/resources/chat";
+import { ChatCompletion, ChatCompletionChunk } from "openai/resources/chat";
 import { Socket } from "socket.io";
-import { OpenAiService } from "../../openai/service/open-ai.service";
+import {
+  OpenAIChatInput,
+  OpenAiService,
+} from "../../openai/service/open-ai.service";
 import { ChatMessageDto } from "../dto/chat-message.dto";
 import { FilterSession } from "../dto/filter-session.dto";
+import { SUMMARY_PROMPT } from "../../utils/constants";
 
 @Injectable()
 export class SessionService {
@@ -97,6 +101,48 @@ export class SessionService {
     });
   }
 
+  async finishSession(sessionId: string, userId: string): Promise<Session> {
+    return this.dataSource.transaction(async (entityManager: EntityManager) => {
+      const session: Session = await entityManager.findOne(Session, {
+        where: { id: sessionId },
+        relations: ["user", "character", "chat"],
+      });
+      if (!session) {
+        throw new BadRequestException("Specified session not found");
+      }
+      if (session.user.id !== userId) {
+        throw new BadRequestException(
+          "Specified user don't have permissions to access this session",
+        );
+      }
+      const summary: string = await this.summarizeConversation(session.chat);
+      const summaryJSON = JSON.parse(summary);
+      console.log(summary);
+      await entityManager.update(
+        Session,
+        { id: session.id },
+        { discussionTopics: summaryJSON },
+      );
+      return { ...session, discussionTopics: summaryJSON };
+    });
+  }
+
+  async summarizeConversation(chat: Chat[]): Promise<string> {
+    const input = [
+      ...chat.map((e: Chat) => {
+        return {
+          role: e.isSystemMessage ? "system" : e.isBot ? "assistant" : "user",
+          content: e.content,
+        };
+      }),
+      { role: "user", content: SUMMARY_PROMPT },
+    ] as OpenAIChatInput[];
+    const result: ChatCompletion = await this.openAiService.generateOutput(
+      input,
+    );
+    return result.choices[0].message.content;
+  }
+
   async handleChatMessage(
     chatMessage: ChatMessageDto,
     client: Socket,
@@ -150,6 +196,7 @@ export class SessionService {
 
     for await (const part of resultStream) {
       const text: string = part.choices[0]?.delta?.content || "";
+      console.log(text);
       client.emit("CHAT_OUTPUT", text);
       responseText += text;
     }

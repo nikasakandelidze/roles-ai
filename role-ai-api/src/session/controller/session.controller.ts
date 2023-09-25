@@ -39,4 +39,11 @@ export class SessionController {
     const userId: string = request["user"].sub;
     return this.sessionService.getSessionById(sessionId, userId);
   }
+
+  @UseGuards(AuthGuard)
+  @Post("/api/session/:id/finish")
+  async finishSession(@Param("id") sessionId: string, @Req() request: any) {
+    const userId: string = request["user"].sub;
+    return this.sessionService.finishSession(sessionId, userId);
+  }
 }
