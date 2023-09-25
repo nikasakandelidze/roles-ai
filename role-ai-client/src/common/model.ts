@@ -15,6 +15,7 @@ export type Character = {
   createdAt?: string;
   updatedAt?: string;
   suggestedPrompts: { array: { content: string; metadata?: string }[] };
+  sessions?: Session[];
 };
 
 export type Chat = {
@@ -36,6 +37,7 @@ export type Session = {
   chat: Chat[];
   createdAt?: Date;
   updatedAt?: Date;
+  discussionTopics?: { topic: string }[];
 };
 
 export type CreateCharacter = Pick<Character, "name" | "context" | "audience">;

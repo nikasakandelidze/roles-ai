@@ -1,16 +1,20 @@
 import { useEffect } from "react";
 import { sessionStore } from "../state/sessions";
-import { ActionProgress } from "../state/user";
+import { charactersStore } from "../state/characters";
 
 export const useSessionHistory = () => {
-  const progressState: ActionProgress =
-    sessionStore.fetchSessionHistoryProgressState;
+  // useEffect(() => {
+  //   sessionStore.fetchSessionHistory();
+  // }, []);
+
   useEffect(() => {
-    sessionStore.fetchSessionHistory();
+    charactersStore.fetchCharacterSessions();
   }, []);
 
   return {
     history: sessionStore.sessionHistory,
-    progressState,
+    sessionsHistoryProgressState: sessionStore.fetchSessionHistoryProgressState,
+    characters: charactersStore.characters,
+    charactersProgressState: charactersStore.charactersFilterProgress,
   };
 };

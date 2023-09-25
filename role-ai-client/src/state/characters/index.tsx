@@ -21,8 +21,40 @@ export class CharactersState {
       updateCharacterCreationProgressState: action,
       updateCharactersFilterProgressState: action,
       updateCharacters: action,
+      fetchCharacterSessions: action,
     });
   }
+
+  // This method is reusing characters state from the home page, for now it's ok
+  fetchCharacterSessions = async () => {
+    try {
+      this.updateCharactersFilterProgressState("IN_PROGRESS", null);
+      const response = await axios.get(
+        "http://localhost:3001/api/character/sessions",
+        {
+          headers: {
+            Authorization: `Bearer ${this.userStore.user?.accessToken}`,
+          },
+        },
+      );
+      const characters: Character[] = response.data.characters;
+      this.updateCharactersFilterProgressState(
+        "SUCCESS",
+        "Character created successfully",
+      );
+      this.updateCharacters(characters);
+    } catch (err: any) {
+      const aerr: AxiosError = err as AxiosError;
+      if (aerr.response?.status === 401) {
+        this.userStore.resetUser();
+      }
+      console.log(err);
+      this.updateCharactersFilterProgressState(
+        "FAILED",
+        err.response?.data?.message || "Failed to create character",
+      );
+    }
+  };
 
   updateCharacters = (characters: Character[]) => {
     this.characters = characters;

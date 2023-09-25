@@ -164,7 +164,7 @@ export const theme = createTheme({
       paper: Colors.Light.N10,
     },
     text: {
-      primary: Colors.Dark.N900,
+      primary: Colors.Dark.N700,
       secondary: Colors.Dark.N500,
       disabled: Colors.Mid.N300,
     },
