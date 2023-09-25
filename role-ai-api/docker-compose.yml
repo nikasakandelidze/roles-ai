@@ -1,0 +1,38 @@
+version: "3"
+services:
+  rolesai-dev-db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=rolesai-dev-db
+    ports:
+      - "5433:5432"
+    volumes:
+      - rolesai-dev-db:/var/lib/postgresql/data
+    networks:
+      - rolesai-network
+  rolesai-api:
+    build:
+      context: .
+    environment:
+      - PORT=3000 # Set the PORT environment variable (adjust as needed)
+      - POSTGRES_HOST=rolesai-dev-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=rolesai-dev-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - OPENAI_KEY=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
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rolesai-dev-db
+    networks:
+      - rolesai-network
+volumes:
+  rolesai-dev-db:
+    driver: local
+
+networks:
+  rolesai-network:

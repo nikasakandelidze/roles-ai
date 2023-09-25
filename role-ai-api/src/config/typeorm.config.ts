@@ -8,6 +8,9 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   private readonly config: ConfigService;
 
   public createTypeOrmOptions(): TypeOrmModuleOptions {
+    console.log(this.config.get("POSTGRES_HOST"));
+    console.log(this.config);
+    console.log(this.config.get("POSTGRES_USER"));
     return {
       type: "postgres",
       host: this.config.get<string>("POSTGRES_HOST"),
@@ -17,7 +20,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       password: this.config.get<string>("POSTGRES_PASSWORD"),
       entities: ["dist/**/**.entity{.js,.ts}"],
       migrations: ["dist/**/**-migrations.js"],
-      migrationsRun: true,
+      migrationsRun: false,
       synchronize: true,
       ssl: !!this.config.get<string>("development"),
       extra: {

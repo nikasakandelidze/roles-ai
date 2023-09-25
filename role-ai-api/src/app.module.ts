@@ -12,6 +12,7 @@ import { SessionModule } from "./session/session.module";
 import { ChatModule } from "./chat/chat.module";
 import { TaskQueueModule } from "./task-queue/task-queue.module";
 import { ScheduleModule } from "@nestjs/schedule";
+import { HealthCheckModule } from "./health-check/health-check.module";
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ScheduleModule } from "@nestjs/schedule";
     SessionModule,
     ChatModule,
     TaskQueueModule,
+    HealthCheckModule,
   ],
   controllers: [],
   providers: [CryptoService],
