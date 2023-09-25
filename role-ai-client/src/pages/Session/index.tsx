@@ -54,6 +54,12 @@ export const Session = observer(() => {
     inputRef?.current?.focus();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      id && sessionStore.finishSession(id);
+    };
+  }, [id]);
+
   const showSuggestions = (sessionStore?.session?.chat?.length || 0) <= 1;
 
   return (

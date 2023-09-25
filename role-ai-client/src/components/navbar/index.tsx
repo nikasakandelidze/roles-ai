@@ -76,6 +76,7 @@ export const Navigation = observer(() => {
           <Stack direction="row">
             {visibleRoutes.map((route: RouteData) => (
               <Box
+                key={route.id}
                 sx={{ mr: Margin.M8, display: "flex", alignItems: "center" }}
                 onClick={() => navigate(route.path)}
               >

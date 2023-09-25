@@ -51,11 +51,32 @@ export class SessionState {
       fetchSessionHistory: action,
       updateFetchSessionHistoryProgressState: action,
       updateSessionHistory: action,
+      finishSession: action,
     });
   }
 
   updateSessionHistory = (sessions: Session[]) => {
     this.sessionHistory = sessions;
+  };
+
+  finishSession = async (sessionId: string) => {
+    try {
+      await axios.post(
+        `http://localhost:3001/api/session/${sessionId}/finish`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${this.userStore.user?.accessToken}`,
+          },
+        },
+      );
+    } catch (err: any) {
+      const aerr: AxiosError = err as AxiosError;
+      if (aerr.response?.status === 401) {
+        this.userStore.resetUser();
+      }
+      console.log(err);
+    }
   };
 
   updateFetchSessionHistoryProgressState = (
