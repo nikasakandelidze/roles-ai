@@ -188,6 +188,7 @@ export class SessionService {
     session: Session,
     entityManager?: EntityManager,
   ) {
+    console.log(1);
     const resultStream: Stream<ChatCompletionChunk> =
       await this.openAiService.generateStreamingOutput(chat);
 
