@@ -195,7 +195,6 @@ export class SessionService {
 
     for await (const part of resultStream) {
       const text: string = part.choices[0]?.delta?.content || "";
-      console.log(text);
       client.emit("CHAT_OUTPUT", text);
       responseText += text;
     }
