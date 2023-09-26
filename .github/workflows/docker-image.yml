@@ -15,4 +15,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: cd roles-ai-api && docker build . --file Dockerfile --tag roles-ai-api:$(date +%s)
+        run: cd role-ai-api && docker build . --file Dockerfile --tag roles-ai-api:$(date +%s)
