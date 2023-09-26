@@ -26,7 +26,6 @@ export class SessionService {
   ) {}
 
   async startSession(startSessionDto: StartSessionDto): Promise<Session> {
-    console.log(1);
     return this.dataSource.transaction(async (entityManager: EntityManager) => {
       const user: User = await entityManager.findOneBy(User, {
         id: startSessionDto.userId,
