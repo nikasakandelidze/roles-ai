@@ -117,7 +117,6 @@ export class SessionService {
       }
       const summary: string = await this.summarizeConversation(session.chat);
       const summaryJSON = JSON.parse(summary);
-      console.log(summary);
       await entityManager.update(
         Session,
         { id: session.id },
