@@ -9,10 +9,26 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Build the Docker image
-        run: cd role-ai-api && docker build . --file Dockerfile --tag roles-ai-api:$(date +%s)
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Registry
+        run: |
+          docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY_URL }}
+          docker pull ${{ secrets.REGISTRY_URL }}/roles-ai-api:latest || true
+
+      - name: Build Docker image
+        run: cd role-ai-api && docker build -t roles-ai-api .
+
+      - name: Tag Docker image
+        run: docker tag roles-ai-api ${{ secrets.REGISTRY_URL }}/roles-ai-api:latest
+
+      - name: Push Docker image to Registry
+        run: docker push ${{ secrets.REGISTRY_URL }}/roles-ai-api:latest
+
+      - name: Cleanup
+        run: docker logout ${{ secrets.REGISTRY_URL }}
