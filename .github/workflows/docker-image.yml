@@ -16,19 +16,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Login to Docker Registry
-        run: |
-          docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY_URL }}
-          docker pull ${{ secrets.REGISTRY_URL }}/roles-ai-api:latest || true
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 # Change this to your desired AWS region
+
+      - name: Login to Amazon ECR
+        run: $(aws ecr get-login --no-include-email --region us-east-1)
 
       - name: Build Docker image
-        run: cd role-ai-api && docker build -t roles-ai-api .
+        run: docker build -t roles-ai-api .
 
       - name: Tag Docker image
-        run: docker tag roles-ai-api ${{ secrets.REGISTRY_URL }}/roles-ai-api:latest
+        run: docker tag roles-ai-api:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/roles-ai-reg-priv1:latest
 
-      - name: Push Docker image to Registry
-        run: docker push ${{ secrets.REGISTRY_URL }}/roles-ai-api:latest
-
-      - name: Cleanup
-        run: docker logout ${{ secrets.REGISTRY_URL }}
+      - name: Push Docker image to ECR
+        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/roles-ai-reg-priv1:latest
