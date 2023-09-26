@@ -24,10 +24,11 @@ jobs:
           aws-region: us-east-1 # Change this to your desired AWS region
 
       - name: Login to Amazon ECR
-        run: $(aws ecr get-login --no-include-email --region us-east-1)
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image
-        run: docker build -t roles-ai-api .
+        run: cd role-ai-api && docker build -t roles-ai-api .
 
       - name: Tag Docker image
         run: docker tag roles-ai-api:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/roles-ai-reg-priv1:latest
