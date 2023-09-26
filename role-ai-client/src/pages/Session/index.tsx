@@ -1,4 +1,11 @@
-import { Box, LinearProgress } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  LinearProgress,
+  Typography,
+} from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { Colors, Margin, Padding } from "../../common/styles";
 import { useEffect, useRef, useState } from "react";
@@ -20,6 +27,7 @@ export const Session = observer(() => {
   const [input, setInput] = useState("");
   const [tryToSend, setTryToSend] = useState(false);
   const inputRef = useRef<any>(null);
+  const [summarizeSession, setSummarizeSession] = useState(false);
 
   const chats: Chat[] | undefined = sessionStore.session?.chat;
   const aiResponseInProgress: boolean | undefined =
@@ -56,7 +64,7 @@ export const Session = observer(() => {
 
   useEffect(() => {
     return () => {
-      id && sessionStore.finishSession(id);
+      id && summarizeSession && sessionStore.finishSession(id);
     };
   }, [id]);
 
@@ -76,8 +84,8 @@ export const Session = observer(() => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          padding: showSuggestions ? 0 : Padding.P40,
-          paddingBottom: Padding.P40,
+          padding: showSuggestions ? 0 : Padding.P24,
+          // paddingBottom: Padding.P18,
           borderTop: `1px solid ${Colors.Light.N30}`,
           alignItems: "center",
         }}
@@ -90,13 +98,37 @@ export const Session = observer(() => {
           }}
           show={showSuggestions} // Here setting 0 since if there is no chat length then let's show suggestions
         />
-        <SessionInput
-          inputRef={inputRef}
-          setTryToSend={setTryToSend}
-          input={input}
-          setInput={setInput}
-          disable={Boolean(aiResponseInProgress)}
-        />
+        <Grid container>
+          <SessionInput
+            inputRef={inputRef}
+            setTryToSend={setTryToSend}
+            input={input}
+            setInput={setInput}
+            disable={Boolean(aiResponseInProgress)}
+          />
+          <Grid
+            item
+            xs={12}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            flexDirection="column"
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  defaultChecked={false}
+                  onChange={(e) => setSummarizeSession(e.target.checked)}
+                />
+              }
+              label={
+                <Typography variant="caption" sx={{ color: Colors.Dark.N500 }}>
+                  Generate conversation summary after i leave
+                </Typography>
+              }
+            />
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );

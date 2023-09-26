@@ -20,7 +20,7 @@ export const SessionChat = ({ chats }: { chats: Chat[] }) => {
         spacing={2}
         sx={{
           overflowY: "scroll",
-          maxHeight: "77vh",
+          maxHeight: "76vh",
           paddingLeft: Padding.P24,
           paddingRight: Padding.P24,
           paddingTop: Padding.P24,

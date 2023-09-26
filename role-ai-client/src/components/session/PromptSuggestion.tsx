@@ -28,7 +28,7 @@ export const PromptSuggestion = ({
       }}
     >
       <Typography variant="subtitle2" sx={{ color: Colors.Dark.N700 }}>
-        {suggestion}
+        {suggestion.length < 80 ? suggestion : `${suggestion.slice(0, 80)}...`}
       </Typography>
     </Box>
   );

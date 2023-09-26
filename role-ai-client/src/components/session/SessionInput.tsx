@@ -24,7 +24,7 @@ export const SessionInput = ({
   }, []);
 
   return (
-    <Grid container justifyContent="center">
+    <Grid container justifyContent="center" item xs={12}>
       <Grid item xs={6} position="relative">
         <TextField
           inputRef={inputRef}
