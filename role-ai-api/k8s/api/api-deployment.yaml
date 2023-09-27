@@ -1,11 +1,10 @@
-# deployment.yaml
 apiVersion: apps/v1
 kind: Deployment # mainly used for horizontally scalable apps?
 metadata:
-  namespace: local-dev
+  namespace: roles-ai-ns
   name: roles-ai-api
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: roles-ai-api
@@ -16,8 +15,8 @@ spec:
     spec:
       containers:
         - name: roles-ai-api
-          image: local-dev-roles-ai:latest
-          imagePullPolicy: Never
+          image: 448999958455.dkr.ecr.us-east-1.amazonaws.com/roles-ai-reg-priv1
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
           livenessProbe:
@@ -44,29 +43,14 @@ spec:
             - name: PORT
               value: "3000"
             - name: POSTGRES_HOST
-              value: 192.168.100.2 # this is localhost(local machine's) from pod-s perspective
+              value: $(ROLES_AI_DB_SERVICE_SERVICE_HOST)
             - name: POSTGRES_PORT
-              value: "5433"
+              value: "5432"
             - name: POSTGRES_DB
-              value: rolesai-dev-db
+              value: roles-ai-db
             - name: POSTGRES_USER
               value: postgres
             - name: POSTGRES_PASSWORD
               value: postgres
             - name: OPENAI_KEY
               value: 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
----
-# service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: local-dev
-  name: roles-ai-api-service
-spec:
-  selector:
-    app: roles-ai-api
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
-  type: NodePort
