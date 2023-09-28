@@ -6,6 +6,7 @@ import { API_URL } from "../../common/constants";
 
 export class CharactersState {
   characters: Character[] = [];
+
   charactersFilterProgress: ActionProgress = { state: "IDLE", message: null };
   characterCreationProgress: ActionProgress = { state: "IDLE", message: null };
 
