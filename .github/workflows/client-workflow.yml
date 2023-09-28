@@ -29,9 +29,9 @@ jobs:
 
       - name: Pre-Build Docker image
         run: |
-          echo "REACT_APP_API_PROTOCOL=http" > .env
-          echo "REACT_APP_API_HOST=a09b2b6d971814cdc80ec05d68a8be40-24220663.us-east-1.elb.amazonaws.com" >> .env
-          echo "REACT_APP_API_PORT=80" >> .env
+          echo "REACT_APP_API_PROTOCOL=http" > role-ai-client/.env
+          echo "REACT_APP_API_HOST=a09b2b6d971814cdc80ec05d68a8be40-24220663.us-east-1.elb.amazonaws.com" >> role-ai-client/.env
+          echo "REACT_APP_API_PORT=80" >> role-ai-client/.env
         working-directory: ${{ github.workspace }}
 
       - name: Build Docker image
