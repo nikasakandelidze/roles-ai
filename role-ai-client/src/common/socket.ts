@@ -1,6 +1,5 @@
 import { Socket, io } from "socket.io-client";
-
-const URL = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}`;
+import { URL } from "./constants";
 
 export type SocketListenerData = {
   topic: string;
