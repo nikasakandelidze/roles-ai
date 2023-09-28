@@ -66,7 +66,7 @@ export class UserState {
     if (userString) {
       const user: User = JSON.parse(userString);
       try {
-        const response = await axios.get("http://localhost:3001/api/check", {
+        const response = await axios.get(`${URL}/api/check`, {
           headers: { Authorization: `Bearer ${user.accessToken}` },
         });
         if (response.status === 200) {
@@ -97,7 +97,7 @@ export class UserState {
       runInAction(() => {
         this.updateLoginProgressState("IN_PROGRESS", null);
       });
-      const response = await axios.post("http://localhost:3001/api/login", {
+      const response = await axios.post(`${URL}/api/login`, {
         email,
         password,
       });
@@ -122,7 +122,7 @@ export class UserState {
   ) => {
     try {
       this.updateRegisterProgressState("IN_PROGRESS", null);
-      await axios.post("http://localhost:3001/api/register", {
+      await axios.post(`${URL}/api/register`, {
         email,
         password,
         confirmPassword,

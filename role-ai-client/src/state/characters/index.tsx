@@ -2,6 +2,7 @@ import { action, makeObservable, observable } from "mobx";
 import { Character, CreateCharacter, ProgressState } from "../../common/model";
 import { ActionProgress, UserState, userStore } from "../user";
 import axios, { AxiosError } from "axios";
+import { URL } from "../../common/constants";
 
 export class CharactersState {
   characters: Character[] = [];
@@ -29,14 +30,11 @@ export class CharactersState {
   fetchCharacterSessions = async () => {
     try {
       this.updateCharactersFilterProgressState("IN_PROGRESS", null);
-      const response = await axios.get(
-        "http://localhost:3001/api/character/sessions",
-        {
-          headers: {
-            Authorization: `Bearer ${this.userStore.user?.accessToken}`,
-          },
+      const response = await axios.get(`${URL}/api/character/sessions`, {
+        headers: {
+          Authorization: `Bearer ${this.userStore.user?.accessToken}`,
         },
-      );
+      });
       const characters: Character[] = response.data.characters;
       this.updateCharactersFilterProgressState(
         "SUCCESS",
@@ -88,7 +86,7 @@ export class CharactersState {
     try {
       this.updateCharacterCreationProgressState("IN_PROGRESS", null);
       const response = await axios.post(
-        "http://localhost:3001/api/character",
+        `${URL}/api/character`,
         {
           ...createCharacter,
         },
@@ -120,7 +118,7 @@ export class CharactersState {
   filterCharacters = async () => {
     try {
       this.updateCharactersFilterProgressState("IN_PROGRESS", null);
-      const response = await axios.get("http://localhost:3001/api/character", {
+      const response = await axios.get(`${URL}/api/character`, {
         headers: {
           Authorization: `Bearer ${this.userStore.user?.accessToken}`,
         },

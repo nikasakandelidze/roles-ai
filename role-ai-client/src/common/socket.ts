@@ -1,6 +1,6 @@
 import { Socket, io } from "socket.io-client";
 
-const URL = "http://localhost:3001";
+const URL = `${process.env.REACT_APP_API_PROTOCOL}://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}`;
 
 export type SocketListenerData = {
   topic: string;

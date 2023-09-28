@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: roles-ai-ns
+  name: roles-ai-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: roles-ai-client
+  template:
+    metadata:
+      labels:
+        app: roles-ai-client
+    spec:
+      containers:
+        - name: roles-ai-client
+          image: 448999958455.dkr.ecr.us-east-1.amazonaws.com/roles-ai-client
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: REACT_APP_API_PROTOCOL
+              value: http
+            - name: REACT_APP_API_HOST
+              value: a09b2b6d971814cdc80ec05d68a8be40-24220663.us-east-1.elb.amazonaws.com
+            - name: REACT_APP_API_PORT
+              value: "80"

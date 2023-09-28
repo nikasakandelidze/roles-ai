@@ -62,7 +62,7 @@ export class SessionState {
   finishSession = async (sessionId: string) => {
     try {
       await axios.post(
-        `http://localhost:3001/api/session/${sessionId}/finish`,
+        `${URL}/api/session/${sessionId}/finish`,
         {},
         {
           headers: {
@@ -92,7 +92,7 @@ export class SessionState {
   fetchSessionHistory = async () => {
     try {
       this.updateFetchSessionHistoryProgressState("IN_PROGRESS", null);
-      const response = await axios.get("http://localhost:3001/api/session", {
+      const response = await axios.get(`${URL}/api/session`, {
         headers: {
           Authorization: `Bearer ${this.userStore.user?.accessToken}`,
         },
@@ -210,7 +210,7 @@ export class SessionState {
     try {
       this.updateNewSessionProgressState("IN_PROGRESS", null);
       const response = await axios.post(
-        "http://localhost:3001/api/session/start",
+        `${URL}/api/session/start`,
         {
           characterId,
         },
@@ -246,14 +246,11 @@ export class SessionState {
   fetchSession = async (id: string) => {
     try {
       this.updateFetchSessionProgressState("IN_PROGRESS", null);
-      const response = await axios.get(
-        `http://localhost:3001/api/session/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.userStore.user?.accessToken}`,
-          },
+      const response = await axios.get(`${URL}/api/session/${id}`, {
+        headers: {
+          Authorization: `Bearer ${this.userStore.user?.accessToken}`,
         },
-      );
+      });
       const session: Session = response.data;
       transaction(() => {
         this.updateSession(session);
