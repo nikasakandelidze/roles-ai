@@ -6,7 +6,7 @@ import {
 import axios, { AxiosError } from "axios";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { USER_LOCAL_STORAGE_KEY } from "../../common/constants";
-import { URL } from "../../common/constants";
+import { API_URL } from "../../common/constants";
 
 export type ActionProgress = {
   state: ProgressState;
@@ -67,7 +67,7 @@ export class UserState {
     if (userString) {
       const user: User = JSON.parse(userString);
       try {
-        const response = await axios.get(`${URL}/api/check`, {
+        const response = await axios.get(`${API_URL}/api/check`, {
           headers: { Authorization: `Bearer ${user.accessToken}` },
         });
         if (response.status === 200) {
@@ -98,7 +98,7 @@ export class UserState {
       runInAction(() => {
         this.updateLoginProgressState("IN_PROGRESS", null);
       });
-      const response = await axios.post(`${URL}/api/login`, {
+      const response = await axios.post(`${API_URL}/api/login`, {
         email,
         password,
       });
@@ -123,7 +123,7 @@ export class UserState {
   ) => {
     try {
       this.updateRegisterProgressState("IN_PROGRESS", null);
-      await axios.post(`${URL}/api/register`, {
+      await axios.post(`${API_URL}/api/register`, {
         email,
         password,
         confirmPassword,

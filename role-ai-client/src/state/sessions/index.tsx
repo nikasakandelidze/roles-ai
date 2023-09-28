@@ -14,7 +14,7 @@ import {
 import { ActionProgress, UserState, userStore } from "../user";
 import axios, { AxiosError } from "axios";
 import { SocketService } from "../../common/socket";
-import { URL } from "../../common/constants";
+import { API_URL } from "../../common/constants";
 
 export const USER_MESSAGE_TOPIC_INPUT = "CHAT_INPUT";
 export const BOT_MESSAGE_TOPIC_OUTPUT = "CHAT_OUTPUT";
@@ -63,7 +63,7 @@ export class SessionState {
   finishSession = async (sessionId: string) => {
     try {
       await axios.post(
-        `${URL}/api/session/${sessionId}/finish`,
+        `${API_URL}/api/session/${sessionId}/finish`,
         {},
         {
           headers: {
@@ -93,7 +93,7 @@ export class SessionState {
   fetchSessionHistory = async () => {
     try {
       this.updateFetchSessionHistoryProgressState("IN_PROGRESS", null);
-      const response = await axios.get(`${URL}/api/session`, {
+      const response = await axios.get(`${API_URL}/api/session`, {
         headers: {
           Authorization: `Bearer ${this.userStore.user?.accessToken}`,
         },
@@ -211,7 +211,7 @@ export class SessionState {
     try {
       this.updateNewSessionProgressState("IN_PROGRESS", null);
       const response = await axios.post(
-        `${URL}/api/session/start`,
+        `${API_URL}/api/session/start`,
         {
           characterId,
         },
@@ -247,7 +247,7 @@ export class SessionState {
   fetchSession = async (id: string) => {
     try {
       this.updateFetchSessionProgressState("IN_PROGRESS", null);
-      const response = await axios.get(`${URL}/api/session/${id}`, {
+      const response = await axios.get(`${API_URL}/api/session/${id}`, {
         headers: {
           Authorization: `Bearer ${this.userStore.user?.accessToken}`,
         },

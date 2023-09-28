@@ -1,5 +1,5 @@
 import { Socket, io } from "socket.io-client";
-import { URL } from "./constants";
+import { API_URL } from "./constants";
 
 export type SocketListenerData = {
   topic: string;
@@ -12,7 +12,7 @@ export class SocketService {
 
   connect(initialHandler?: SocketListenerData[]) {
     if (!this.socket) {
-      this.socket = io(URL);
+      this.socket = io(API_URL);
       initialHandler && this.handlers.push(...initialHandler);
 
       this.handlers.forEach((handlerData: SocketListenerData) => {
