@@ -9,8 +9,6 @@ import { useEffect } from "react";
 import { userStore } from "./state/user";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 
-console.log(1)
-
 const App = observer(() => {
   useEffect(() => {
     userStore.checkToken();
