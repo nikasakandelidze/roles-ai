@@ -11,7 +11,6 @@ import { ProtectedRoute } from "./routes/ProtectedRoute";
 
 const App = observer(() => {
   console.log(process.env);
-  console.log("updated");
   useEffect(() => {
     userStore.checkToken();
   }, []);
