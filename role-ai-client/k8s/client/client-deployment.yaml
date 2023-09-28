@@ -16,7 +16,7 @@ spec:
       containers:
         - name: roles-ai-client
           image: 448999958455.dkr.ecr.us-east-1.amazonaws.com/roles-ai-client
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:
