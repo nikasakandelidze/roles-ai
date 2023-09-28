@@ -10,6 +10,7 @@ import { userStore } from "./state/user";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 
 const App = observer(() => {
+  console.log(process.env);
   useEffect(() => {
     userStore.checkToken();
   }, []);
