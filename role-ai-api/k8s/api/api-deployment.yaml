@@ -4,7 +4,7 @@ metadata:
   namespace: roles-ai-ns
   name: roles-ai-api
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: roles-ai-api
