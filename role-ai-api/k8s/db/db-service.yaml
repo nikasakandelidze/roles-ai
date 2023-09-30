@@ -5,7 +5,7 @@ kind: Service
 metadata:
   name: roles-ai-db-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: roles-ai-db
   ports:
@@ -13,4 +13,3 @@ spec:
       protocol: TCP
       port: 5432
       targetPort: 5432
-      nodePort: 30432
