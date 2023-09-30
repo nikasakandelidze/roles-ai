@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: roles-ai-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: a245df88f8b814e69b74ad0dff5c9bde-1965348937.us-east-1.elb.amazonaws.com  # Replace with your actual domain or hostname
+      http:
+        paths:
+          - path: /api/
+            pathType: Prefix
+            backend:
+              service:
+                name: roles-ai-api-service
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: roles-ai-client-service
+                port:
+                  number: 80

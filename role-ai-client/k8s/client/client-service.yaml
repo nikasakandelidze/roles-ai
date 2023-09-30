@@ -1,7 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: roles-ai-client-service-lb
+  name: roles-ai-client-service
+  namespace: roles-ai-ns
+  labels:
+    app: roles-ai-client-service
 spec:
   selector:
     app: roles-ai-client
@@ -9,4 +12,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: LoadBalancer
+  type: ClusterIP
