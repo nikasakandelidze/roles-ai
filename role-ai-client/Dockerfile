@@ -19,6 +19,9 @@ RUN npm run build
 # Use a lightweight web server to serve the static files
 FROM nginx:alpine
 
+# Copy the custom NGINX configuration file to the container
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copy the production-ready build from the build stage to the nginx web server
 COPY --from=build /app/build /usr/share/nginx/html
 
