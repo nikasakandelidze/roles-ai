@@ -5,6 +5,7 @@ import axios, { AxiosError } from "axios";
 import { API_URL } from "../../common/constants";
 
 export class CharactersState {
+  a = 1;
   characters: Character[] = [];
 
   charactersFilterProgress: ActionProgress = { state: "IDLE", message: null };
