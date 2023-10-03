@@ -5,7 +5,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: a245df88f8b814e69b74ad0dff5c9bde-1965348937.us-east-1.elb.amazonaws.com  # Replace with your actual domain or hostname
+    - host: a245df88f8b814e69b74ad0dff5c9bde-6de5f5f24b5770f5.elb.us-east-1.amazonaws.com  # Replace with your actual domain or hostname
       http:
         paths:
           - path: /api/
