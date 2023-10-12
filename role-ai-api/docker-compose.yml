@@ -23,7 +23,7 @@ services:
       - POSTGRES_DB=rolesai-dev-db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - OPENAI_KEY=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
+      - OPENAI_KEY=
     ports:
       - "3000:3000"
     depends_on:
